@@ -10,6 +10,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\bonus\BonusLife.h" />
+    <ClInclude Include="include\bonus\SlowMode.h" />
+    <ClInclude Include="include\bonus\X2Pieces.h" />
+    <ClInclude Include="include\core\Game.h" />
+    <ClInclude Include="include\enemies\Shuriken.h" />
+    <ClInclude Include="include\map\Map.h" />
+    <ClInclude Include="include\player\Player.h" />
+    <ClInclude Include="include\ui\Menu.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\bonus\BonusLife.cpp" />
+    <ClCompile Include="src\bonus\SlowMode.cpp" />
+    <ClCompile Include="src\bonus\X2Pieces.cpp" />
+    <ClCompile Include="src\core\Game.cpp" />
+    <ClCompile Include="src\enemies\Shuriken.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\map\Map.cpp" />
+    <ClCompile Include="src\player\Player.cpp" />
+    <ClCompile Include="src\ui\Menu.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -76,27 +97,6 @@
       <AdditionalDependencies>sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="BonusLife.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="ShadowSprint.cpp" />
-    <ClCompile Include="Shuriken.cpp" />
-    <ClCompile Include="SlowMode.cpp" />
-    <ClCompile Include="X2Pieces.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BonusLife.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Shuriken.h" />
-    <ClInclude Include="SlowMode.h" />
-    <ClInclude Include="X2Pieces.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
