@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../ui/MainMenu.h"
+#include "../ui/OptionMenu.h"
 
 using namespace sf;
 
@@ -10,7 +11,7 @@ public:
     Game();
     void run();
 
-    enum GameState { PLAYING, MAINMENU, PAUSEMENU };
+    enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
 
     GameState currentState;
 
@@ -19,6 +20,7 @@ private:
     Clock clock;
 
     MainMenu mainMenu;
+    OptionMenu optionMenu;
 
     void processEvents();
     void update(float dt);

@@ -1,22 +1,23 @@
 #include "../../include/ui/MainMenu.h"
 
-MainMenu::MainMenu(RenderWindow& windowRef) : window(windowRef),
-font("../assets/fonts/Karasha.otf"),
-titleText(font),
-playText(font),
-quitText(font)
+MainMenu::MainMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
+titleText(font), playText(font), optionText(font), quitText(font)
 {
     titleText.setString("Ninja Runner");
-    titleText.setCharacterSize(300);
-    titleText.setFillColor(sf::Color::White);
+    titleText.setCharacterSize(250);
+    titleText.setFillColor(Color::White);
 
     playText.setString("Jouer");
     playText.setCharacterSize(100);
-    playText.setFillColor(sf::Color::White);
+    playText.setFillColor(Color::White);
+
+    optionText.setString("Options");
+    optionText.setCharacterSize(100);
+    optionText.setFillColor(Color::White);
 
     quitText.setString("Quitter");
     quitText.setCharacterSize(100);
-    quitText.setFillColor(sf::Color::White);
+    quitText.setFillColor(Color::White);
 
     Vector2u windowSize = window.getSize();
 
@@ -28,6 +29,10 @@ quitText(font)
     playText.setOrigin(playBounds.getCenter());
     playText.setPosition({ windowSize.x / 2.f, 500.f });
 
+    FloatRect optionsBounds = optionText.getLocalBounds();
+    optionText.setOrigin(optionsBounds.getCenter());
+    optionText.setPosition({ windowSize.x / 2.f, 650.f });
+
     FloatRect quitBounds = quitText.getLocalBounds();
     quitText.setOrigin(quitBounds.getCenter());
     quitText.setPosition({ windowSize.x / 2.f, 800.f });
@@ -35,26 +40,41 @@ quitText(font)
 
 void MainMenu::update(float dt) {}
 
-bool MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
-    if (const auto* mouseEvent = event.getIf<sf::Event::MouseButtonPressed>()) {
+MainMenu::MainMenuAction MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+    if (firstActivation && activationClock.getElapsedTime() < activationDelay) {
+        return MainMenuAction::None;
+    }
+
+    firstActivation = false;
+
+    if (const auto* mouseEvent = event.getIf<sf::Event::MouseButtonReleased>()) {
         if (mouseEvent->button == sf::Mouse::Button::Left) {
-            sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-            sf::Vector2f mousePos = window.mapPixelToCoords(pixelPos);
+            sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
             if (playText.getGlobalBounds().contains(mousePos)) {
-                return true;
+                return MainMenuAction::Play;
             }
-
+            if (optionText.getGlobalBounds().contains(mousePos)) {
+                return MainMenuAction::Options;
+            }
             if (quitText.getGlobalBounds().contains(mousePos)) {
-                window.close();
+                return MainMenuAction::Quit;
             }
         }
     }
-    return false;
+
+    return MainMenuAction::None;
 }
 
-void MainMenu::draw(sf::RenderWindow& window) const {
+
+void MainMenu::draw(RenderWindow& window) const {
     window.draw(titleText);
     window.draw(playText);
+    window.draw(optionText);
     window.draw(quitText);
+}
+
+void MainMenu::activate() {
+    activationClock.restart();
+    firstActivation = true;
 }
