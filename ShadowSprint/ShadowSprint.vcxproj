@@ -14,6 +14,8 @@
     <ClInclude Include="include\bonus\BonusLife.h" />
     <ClInclude Include="include\bonus\SlowMode.h" />
     <ClInclude Include="include\bonus\X2Pieces.h" />
+    <ClInclude Include="include\core\Animation.h" />
+    <ClInclude Include="include\core\Entity.h" />
     <ClInclude Include="include\core\Game.h" />
     <ClInclude Include="include\enemies\Shuriken.h" />
     <ClInclude Include="include\map\Map.h" />
@@ -25,6 +27,8 @@
     <ClCompile Include="src\bonus\BonusLife.cpp" />
     <ClCompile Include="src\bonus\SlowMode.cpp" />
     <ClCompile Include="src\bonus\X2Pieces.cpp" />
+    <ClCompile Include="src\core\Animation.cpp" />
+    <ClCompile Include="src\core\Entity.cpp" />
     <ClCompile Include="src\core\Game.cpp" />
     <ClCompile Include="src\enemies\Shuriken.cpp" />
     <ClCompile Include="src\main.cpp" />
