@@ -1,15 +1,23 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 using namespace sf;
 
 class MainMenu {
 public:
+    enum class MainMenuAction {
+        None,
+        Play,
+        Options,
+        Quit
+    };
+
     MainMenu(RenderWindow& window);
     void update(float dt);
-    bool handleEvent(const sf::Event& event, sf::RenderWindow& window);
+    MainMenuAction handleEvent(const Event& event, RenderWindow& window);
     void draw(RenderWindow& window) const;
+
+    void activate();
 
 private:
     RenderWindow& window;
@@ -17,8 +25,10 @@ private:
     Font font;
     Text titleText;
     Text playText;
+    Text optionText;
     Text quitText;
 
-    RectangleShape playButton;
-    RectangleShape quitButton;
+    Clock activationClock;
+    bool firstActivation = true;
+    const Time activationDelay = milliseconds(200);
 };

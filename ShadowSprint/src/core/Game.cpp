@@ -3,10 +3,9 @@
 Game::Game()
     : window(sf::VideoMode({ 1920, 1080 }), "Runner 2d", sf::Style::None),
     currentState(MAINMENU),
-    mainMenu(window)
+    mainMenu(window), optionMenu(window)
 {
     window.setFramerateLimit(60);
-    window.setPosition({ 0, 0 });
 }
 
 void Game::run() {
@@ -30,8 +29,49 @@ void Game::processEvents() {
         }
 
         if (currentState == MAINMENU) {
-            if (mainMenu.handleEvent(*event, window)) {
+            MainMenu::MainMenuAction action = mainMenu.handleEvent(*event, window);
+
+            switch (action) {
+            case MainMenu::MainMenuAction::Play:
                 currentState = PLAYING;
+                mainMenu.activate();
+                break;
+            case MainMenu::MainMenuAction::Options:
+                currentState = OPTIONSMENU;
+                optionMenu.activate();
+                break;
+            case MainMenu::MainMenuAction::Quit:
+                window.close();
+                break;
+            case MainMenu::MainMenuAction::None:
+            default:
+                break;
+            }
+        }
+
+        if (currentState == OPTIONSMENU) {
+            OptionMenu::OptionAction action = optionMenu.handleEvent(*event, window);
+
+            if (action == OptionMenu::OptionAction::Back) {
+                currentState = MAINMENU;
+                mainMenu.activate();
+            }
+
+            static bool lastFullscreen = optionMenu.isFullscreenEnabled();
+            static bool lastVsync = optionMenu.isVsyncEnabled();
+
+            bool currentFullscreen = optionMenu.isFullscreenEnabled();
+            bool currentVsync = optionMenu.isVsyncEnabled();
+
+            if (currentFullscreen != lastFullscreen || currentVsync != lastVsync) {
+                lastFullscreen = currentFullscreen;
+                lastVsync = currentVsync;
+
+                //VideoMode mode = currentFullscreen ? VideoMode::getDesktopMode() : VideoMode(1280, 720);
+                //unsigned int style = currentFullscreen ? Style::Fullscreen : Style::Default;
+
+
+                window.setVerticalSyncEnabled(currentVsync);
             }
         }
     }
@@ -40,6 +80,10 @@ void Game::processEvents() {
 void Game::update(float dt) {
     if (currentState == MAINMENU) {
         mainMenu.update(dt);
+    }
+
+    if (currentState == OPTIONSMENU) {
+        optionMenu.update(dt);
     }
 
     if (currentState == PLAYING) {
@@ -51,6 +95,10 @@ void Game::render() {
     window.clear();
     if (currentState == MAINMENU) {
         mainMenu.draw(window);
+    }
+
+    if (currentState == OPTIONSMENU) {
+        optionMenu.draw(window);
     }
 
     if (currentState == PLAYING) {
