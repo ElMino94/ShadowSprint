@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include "../ui/MainMenu.h"
 
 using namespace sf;
 
@@ -9,13 +10,15 @@ public:
     Game();
     void run();
 
-    enum GameState { MAINMENU, NORMALGAME, WTFGAME };
+    enum GameState { PLAYING, MAINMENU, PAUSEMENU };
 
     GameState currentState;
 
 private:
     RenderWindow window;
     Clock clock;
+
+    MainMenu mainMenu;
 
     void processEvents();
     void update(float dt);
