@@ -18,7 +18,7 @@
     <ClInclude Include="include\enemies\Shuriken.h" />
     <ClInclude Include="include\map\Map.h" />
     <ClInclude Include="include\player\Player.h" />
-    <ClInclude Include="include\ui\Menu.h" />
+    <ClInclude Include="include\ui\MainMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bonus\BonusLife.cpp" />
@@ -29,7 +29,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map\Map.cpp" />
     <ClCompile Include="src\player\Player.cpp" />
-    <ClCompile Include="src\ui\Menu.cpp" />
+    <ClCompile Include="src\ui\MainMenu.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
