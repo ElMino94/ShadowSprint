@@ -77,7 +77,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BonusLife.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ShadowSprint.cpp" />
+    <ClCompile Include="Shuriken.cpp" />
+    <ClCompile Include="SlowMode.cpp" />
+    <ClCompile Include="X2Pieces.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BonusLife.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Shuriken.h" />
+    <ClInclude Include="SlowMode.h" />
+    <ClInclude Include="X2Pieces.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
