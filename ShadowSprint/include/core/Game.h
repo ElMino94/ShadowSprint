@@ -3,6 +3,8 @@
 
 #include "../ui/MainMenu.h"
 #include "../ui/OptionMenu.h"
+#include "../player/Player.h"
+#include "../enemies/Shuriken.h"
 
 using namespace sf;
 
