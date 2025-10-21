@@ -75,7 +75,7 @@ void Player::update(float dt) {
         idleAnim.applyToSprite(sprite);       // il ne faut pas laisser le idleanim
         break;
     case State::Jumping:
-        runAnim.applyToSprite(sprite);       
+        runAnim.applyToSprite(sprite);       // refaire un autre truc pour le jump
         break;
     }
 }
