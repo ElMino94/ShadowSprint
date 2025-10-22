@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <sstream>
 
-using namespace sf;
-
 class OptionMenu {
 public:
     enum class OptionAction {
@@ -12,10 +10,10 @@ public:
         Back
     };
 
-    OptionMenu(RenderWindow& window);
-    OptionAction handleEvent(const Event& event, RenderWindow& window);
+    OptionMenu(sf::RenderWindow& window);
+    OptionAction handleEvent(const sf::Event& event);
     void update(float dt);
-    void draw(RenderWindow& window) const;
+    void draw(sf::RenderWindow& window) const;
 
     void activate();
     void setFullscreen(bool enabled);
@@ -25,21 +23,21 @@ public:
     void updateVolumeText(bool fullscreen);
 
 private:
-    RenderWindow& window;
+    sf::RenderWindow& window;
 
-    Font font;
-    Text titleText;
-    Text backText;
+    sf::Font font;
+    sf::Text titleText;
+    sf::Text backText;
 
-    Text musicVolumeText;
-    Text sfxVolumeText;
-    Text musicLeftArrow;
-    Text musicRightArrow;
-    Text sfxLeftArrow;
-    Text sfxRightArrow;
+    sf::Text musicVolumeText;
+    sf::Text sfxVolumeText;
+    sf::Text musicLeftArrow;
+    sf::Text musicRightArrow;
+    sf::Text sfxLeftArrow;
+    sf::Text sfxRightArrow;
 
-    Text fullscreenText;
-    Text vsyncText;
+    sf::Text fullscreenText;
+    sf::Text vsyncText;
 
     float musicVolume = 100.f;
     float sfxVolume = 100.f;
@@ -47,7 +45,7 @@ private:
     bool fullscreen = true;
     bool vsync = true;
 
-    Clock activationClock;
+    sf::Clock activationClock;
     bool firstActivation = true;
-    const Time activationDelay = milliseconds(200);
+    const sf::Time activationDelay = sf::milliseconds(200);
 };

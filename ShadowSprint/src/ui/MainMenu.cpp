@@ -1,46 +1,31 @@
 #include "../../include/ui/MainMenu.h"
+#include "../../include/ui/UIUtils.h"
+
+using namespace sf;
+using namespace UIUtils;
 
 MainMenu::MainMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
 titleText(font), playText(font), optionText(font), quitText(font)
 {
     titleText.setString("Ninja Runner");
-    titleText.setCharacterSize(250);
-    titleText.setFillColor(Color::White);
-
     playText.setString("Jouer");
-    playText.setCharacterSize(100);
-    playText.setFillColor(Color::White);
-
     optionText.setString("Options");
-    optionText.setCharacterSize(100);
-    optionText.setFillColor(Color::White);
-
     quitText.setString("Quitter");
-    quitText.setCharacterSize(100);
-    quitText.setFillColor(Color::White);
 
-    Vector2u windowSize = window.getSize();
+    styleText(titleText, 250);
+    styleText(playText, 100);
+    styleText(optionText, 100);
+    styleText(quitText, 100);
 
-    FloatRect titleBounds = titleText.getLocalBounds();
-    titleText.setOrigin(titleBounds.getCenter());
-    titleText.setPosition({ windowSize.x / 2.f, 200.f });
-
-    FloatRect playBounds = playText.getLocalBounds();
-    playText.setOrigin(playBounds.getCenter());
-    playText.setPosition({ windowSize.x / 2.f, 500.f });
-
-    FloatRect optionsBounds = optionText.getLocalBounds();
-    optionText.setOrigin(optionsBounds.getCenter());
-    optionText.setPosition({ windowSize.x / 2.f, 650.f });
-
-    FloatRect quitBounds = quitText.getLocalBounds();
-    quitText.setOrigin(quitBounds.getCenter());
-    quitText.setPosition({ windowSize.x / 2.f, 800.f });
+    positionText(titleText, window, 0.15f);
+    positionText(playText, window, 0.4f);
+    positionText(optionText, window, 0.55f);
+    positionText(quitText, window, 0.7f);
 }
 
 void MainMenu::update(float dt) {}
 
-MainMenu::MainMenuAction MainMenu::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+MainMenu::MainMenuAction MainMenu::handleEvent(const sf::Event& event) {
     if (firstActivation && activationClock.getElapsedTime() < activationDelay) {
         return MainMenuAction::None;
     }
@@ -51,21 +36,14 @@ MainMenu::MainMenuAction MainMenu::handleEvent(const sf::Event& event, sf::Rende
         if (mouseEvent->button == sf::Mouse::Button::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-            if (playText.getGlobalBounds().contains(mousePos)) {
-                return MainMenuAction::Play;
-            }
-            if (optionText.getGlobalBounds().contains(mousePos)) {
-                return MainMenuAction::Options;
-            }
-            if (quitText.getGlobalBounds().contains(mousePos)) {
-                return MainMenuAction::Quit;
-            }
+            if (playText.getGlobalBounds().contains(mousePos)) return MainMenuAction::Play;
+            if (optionText.getGlobalBounds().contains(mousePos)) return MainMenuAction::Options;
+            if (quitText.getGlobalBounds().contains(mousePos)) return MainMenuAction::Quit;
         }
     }
 
     return MainMenuAction::None;
 }
-
 
 void MainMenu::draw(RenderWindow& window) const {
     window.draw(titleText);
@@ -83,22 +61,13 @@ void MainMenu::setFullscreen(bool enabled) {
     unsigned int titleSize = enabled ? 250 : 150;
     unsigned int itemSize = enabled ? 100 : 60;
 
-    titleText.setCharacterSize(titleSize);
-    playText.setCharacterSize(itemSize);
-    optionText.setCharacterSize(itemSize);
-    quitText.setCharacterSize(itemSize);
+    styleText(titleText, titleSize);
+    styleText(playText, itemSize);
+    styleText(optionText, itemSize);
+    styleText(quitText, itemSize);
 
-    Vector2u windowSize = window.getSize();
-
-    titleText.setOrigin(titleText.getLocalBounds().getCenter());
-    titleText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.15f });
-
-    playText.setOrigin(playText.getLocalBounds().getCenter());
-    playText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.4f });
-
-    optionText.setOrigin(optionText.getLocalBounds().getCenter());
-    optionText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.55f });
-
-    quitText.setOrigin(quitText.getLocalBounds().getCenter());
-    quitText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.7f });
+    positionText(titleText, window, 0.15f);
+    positionText(playText, window, 0.4f);
+    positionText(optionText, window, 0.55f);
+    positionText(quitText, window, 0.7f);
 }

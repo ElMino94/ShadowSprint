@@ -20,6 +20,7 @@
     <ClInclude Include="include\player\Player.h" />
     <ClInclude Include="include\ui\MainMenu.h" />
     <ClInclude Include="include\ui\optionMenu.h" />
+    <ClInclude Include="include\ui\UIUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bonus\BonusLife.cpp" />

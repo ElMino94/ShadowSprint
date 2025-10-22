@@ -1,94 +1,70 @@
-#include "../../include/ui/optionMenu.h"
+#include "../../include/ui/OptionMenu.h"
+#include "../../include/ui/UIUtils.h"
+
+using namespace sf;
+using namespace UIUtils;
 
 OptionMenu::OptionMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
-titleText(font), backText(font),
-musicVolumeText(font), sfxVolumeText(font),
+titleText(font), backText(font), musicVolumeText(font), sfxVolumeText(font),
 musicLeftArrow(font), sfxLeftArrow(font), musicRightArrow(font), sfxRightArrow(font),
 fullscreenText(font), vsyncText(font)
 {
     titleText.setString("Options");
-    titleText.setCharacterSize(200);
-    titleText.setFillColor(Color::White);
-    titleText.setOrigin(titleText.getLocalBounds().getCenter());
-    titleText.setPosition({ window.getSize().x / 2.f, 100.f });
-
     musicVolumeText.setString("Musique : < 100% >");
-    musicVolumeText.setCharacterSize(80);
-    musicVolumeText.setFillColor(Color::White);
-    musicVolumeText.setOrigin(musicVolumeText.getLocalBounds().getCenter());
-    musicVolumeText.setPosition({ window.getSize().x / 2.f, 300.f });
-
     sfxVolumeText.setString("Effets : < 100% >");
-    sfxVolumeText.setCharacterSize(80);
-    sfxVolumeText.setFillColor(Color::White);
-    sfxVolumeText.setOrigin(sfxVolumeText.getLocalBounds().getCenter());
-    sfxVolumeText.setPosition({ window.getSize().x / 2.f, 400.f });
-
     fullscreenText.setString("Plein écran : Oui");
-    fullscreenText.setCharacterSize(80);
-    fullscreenText.setFillColor(Color::White);
-    fullscreenText.setOrigin(fullscreenText.getLocalBounds().getCenter());
-    fullscreenText.setPosition({ window.getSize().x / 2.f, 550.f });
-
     vsyncText.setString("VSync : Oui");
-    vsyncText.setCharacterSize(80);
-    vsyncText.setFillColor(Color::White);
-    vsyncText.setOrigin(vsyncText.getLocalBounds().getCenter());
-    vsyncText.setPosition({ window.getSize().x / 2.f, 650.f });
-
     backText.setString("Retour");
-    backText.setCharacterSize(100);
-    backText.setFillColor(Color::White);
-    backText.setOrigin(backText.getLocalBounds().getCenter());
-    backText.setPosition({ window.getSize().x / 2.f, 800.f });
 
-    musicLeftArrow.setFont(font);
     musicLeftArrow.setString("<");
-    musicLeftArrow.setCharacterSize(80);
-    musicLeftArrow.setFillColor(sf::Color::White);
-
-    musicRightArrow.setFont(font);
     musicRightArrow.setString(">");
-    musicRightArrow.setCharacterSize(80);
-    musicRightArrow.setFillColor(sf::Color::White);
-
-    sfxLeftArrow.setFont(font);
     sfxLeftArrow.setString("<");
-    sfxLeftArrow.setCharacterSize(80);
-    sfxLeftArrow.setFillColor(sf::Color::White);
-
-    sfxRightArrow.setFont(font);
     sfxRightArrow.setString(">");
-    sfxRightArrow.setCharacterSize(80);
-    sfxRightArrow.setFillColor(sf::Color::White);
+
+    styleText(titleText, 200);
+    styleText(musicVolumeText, 80);
+    styleText(sfxVolumeText, 80);
+    styleText(fullscreenText, 80);
+    styleText(vsyncText, 80);
+    styleText(backText, 100);
+
+    styleText(musicLeftArrow, 80);
+    styleText(musicRightArrow, 80);
+    styleText(sfxLeftArrow, 80);
+    styleText(sfxRightArrow, 80);
+
+    positionText(titleText, window, 0.10f);
+    positionText(musicVolumeText, window, 0.30f);
+    positionText(sfxVolumeText, window, 0.40f);
+    positionText(fullscreenText, window, 0.55f);
+    positionText(vsyncText, window, 0.65f);
+    positionText(backText, window, 0.80f);
 
     updateVolumeText(true);
 }
 
-OptionMenu::OptionAction OptionMenu::handleEvent(const Event& event, RenderWindow& window) {
+OptionMenu::OptionAction OptionMenu::handleEvent(const Event& event) {
     if (firstActivation && activationClock.getElapsedTime() < activationDelay) {
         return OptionAction::None;
     }
     firstActivation = false;
 
-    if (const auto* mouseEvent = event.getIf<sf::Event::MouseButtonReleased>()) {
+    if (const auto* mouseEvent = event.getIf<Event::MouseButtonReleased>()) {
         if (mouseEvent->button == Mouse::Button::Left) {
             Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 
-            if (backText.getGlobalBounds().contains(mousePos)) {
-                return OptionAction::Back;
-            }
+            if (backText.getGlobalBounds().contains(mousePos)) return OptionAction::Back;
 
             if (fullscreenText.getGlobalBounds().contains(mousePos)) {
                 fullscreen = !fullscreen;
                 fullscreenText.setString("Plein écran : " + std::string(fullscreen ? "Oui" : "Non"));
-                fullscreenText.setOrigin(fullscreenText.getLocalBounds().getCenter());
+                centerText(fullscreenText);
             }
 
             if (vsyncText.getGlobalBounds().contains(mousePos)) {
                 vsync = !vsync;
                 vsyncText.setString("VSync : " + std::string(vsync ? "Oui" : "Non"));
-                vsyncText.setOrigin(vsyncText.getLocalBounds().getCenter());
+                centerText(vsyncText);
             }
 
             if (musicLeftArrow.getGlobalBounds().contains(mousePos)) {
@@ -128,7 +104,6 @@ void OptionMenu::draw(RenderWindow& window) const {
     window.draw(sfxLeftArrow);
     window.draw(sfxVolumeText);
     window.draw(sfxRightArrow);
-
 }
 
 void OptionMenu::activate() {
@@ -150,48 +125,26 @@ void OptionMenu::setFullscreen(bool enabled) {
     unsigned int itemSize = enabled ? 80 : 50;
     unsigned int backSize = enabled ? 100 : 70;
 
-    titleText.setCharacterSize(titleSize);
-    musicVolumeText.setCharacterSize(itemSize);
-    sfxVolumeText.setCharacterSize(itemSize);
-    fullscreenText.setCharacterSize(itemSize);
-    vsyncText.setCharacterSize(itemSize);
-    backText.setCharacterSize(backSize);
-    musicLeftArrow.setCharacterSize(itemSize);
-    musicRightArrow.setCharacterSize(itemSize);
-    sfxLeftArrow.setCharacterSize(itemSize);
-    sfxRightArrow.setCharacterSize(itemSize);
+    styleText(titleText, titleSize);
+    styleText(musicVolumeText, itemSize);
+    styleText(sfxVolumeText, itemSize);
+    styleText(fullscreenText, itemSize);
+    styleText(vsyncText, itemSize);
+    styleText(backText, backSize);
 
-    Vector2u windowSize = window.getSize();
+    styleText(musicLeftArrow, itemSize);
+    styleText(musicRightArrow, itemSize);
+    styleText(sfxLeftArrow, itemSize);
+    styleText(sfxRightArrow, itemSize);
 
-    titleText.setOrigin(titleText.getLocalBounds().getCenter());
-    titleText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.10f });
+    positionText(titleText, window, 0.10f);
+    positionText(musicVolumeText, window, 0.30f);
+    positionText(sfxVolumeText, window, 0.40f);
+    positionText(fullscreenText, window, 0.55f);
+    positionText(vsyncText, window, 0.65f);
+    positionText(backText, window, 0.80f);
 
-    musicVolumeText.setOrigin(musicVolumeText.getLocalBounds().getCenter());
-    musicVolumeText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.30f });
-
-    sfxVolumeText.setOrigin(sfxVolumeText.getLocalBounds().getCenter());
-    sfxVolumeText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.40f });
-
-    musicLeftArrow.setOrigin(musicLeftArrow.getLocalBounds().getCenter());
-    musicLeftArrow.setPosition({ musicVolumeText.getPosition().x + 50.f, musicVolumeText.getPosition().y });
-
-    musicRightArrow.setOrigin(musicRightArrow.getLocalBounds().getCenter());
-    musicRightArrow.setPosition({ musicVolumeText.getPosition().x + 200.f, musicVolumeText.getPosition().y });
-
-    sfxLeftArrow.setOrigin(sfxLeftArrow.getLocalBounds().getCenter());
-    sfxLeftArrow.setPosition({ sfxVolumeText.getPosition().x + 50.f, sfxVolumeText.getPosition().y });
-
-    sfxRightArrow.setOrigin(sfxRightArrow.getLocalBounds().getCenter());
-    sfxRightArrow.setPosition({ sfxVolumeText.getPosition().x + 200.f, sfxVolumeText.getPosition().y });
-
-    fullscreenText.setOrigin(fullscreenText.getLocalBounds().getCenter());
-    fullscreenText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.55f });
-
-    vsyncText.setOrigin(vsyncText.getLocalBounds().getCenter());
-    vsyncText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.65f });
-
-    backText.setOrigin(backText.getLocalBounds().getCenter());
-    backText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.80f });
+    updateVolumeText(enabled);
 }
 
 void OptionMenu::updateVolumeText(bool fullscreen) {
@@ -204,16 +157,16 @@ void OptionMenu::updateVolumeText(bool fullscreen) {
     std::string musicFormatted = musicStream.str();
 
     musicVolumeText.setString("Musique :   " + musicFormatted + "%  ");
-    musicVolumeText.setOrigin(musicVolumeText.getLocalBounds().getCenter());
+    centerText(musicVolumeText);
     musicVolumeText.setPosition({ windowSize.x / 2.f, musicY });
 
     float musicLeftOffset = fullscreen ? 80.f : 50.f;
     float musicRightOffset = fullscreen ? 350.f : 200.f;
 
-    musicLeftArrow.setOrigin(musicLeftArrow.getLocalBounds().getCenter());
+    centerText(musicLeftArrow);
     musicLeftArrow.setPosition({ musicVolumeText.getPosition().x + musicLeftOffset, musicY });
 
-    musicRightArrow.setOrigin(musicRightArrow.getLocalBounds().getCenter());
+    centerText(musicRightArrow);
     musicRightArrow.setPosition({ musicVolumeText.getPosition().x + musicRightOffset, musicY });
 
     std::ostringstream sfxStream;
@@ -221,15 +174,15 @@ void OptionMenu::updateVolumeText(bool fullscreen) {
     std::string sfxFormatted = sfxStream.str();
 
     sfxVolumeText.setString("Effets :   " + sfxFormatted + "%  ");
-    sfxVolumeText.setOrigin(sfxVolumeText.getLocalBounds().getCenter());
+    centerText(sfxVolumeText);
     sfxVolumeText.setPosition({ windowSize.x / 2.f, sfxY });
 
     float sfxLeftOffset = fullscreen ? 80.f : 50.f;
     float sfxRightOffset = fullscreen ? 350.f : 200.f;
 
-    sfxLeftArrow.setOrigin(sfxLeftArrow.getLocalBounds().getCenter());
+    centerText(sfxLeftArrow);
     sfxLeftArrow.setPosition({ sfxVolumeText.getPosition().x + sfxLeftOffset, sfxY });
 
-    sfxRightArrow.setOrigin(sfxRightArrow.getLocalBounds().getCenter());
+    centerText(sfxRightArrow);
     sfxRightArrow.setPosition({ sfxVolumeText.getPosition().x + sfxRightOffset, sfxY });
 }

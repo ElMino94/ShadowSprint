@@ -29,7 +29,7 @@ void Game::processEvents() {
         }
 
         if (currentState == MAINMENU) {
-            MainMenu::MainMenuAction action = mainMenu.handleEvent(*event, window);
+            MainMenu::MainMenuAction action = mainMenu.handleEvent(*event);
 
             switch (action) {
             case MainMenu::MainMenuAction::Play:
@@ -50,7 +50,7 @@ void Game::processEvents() {
         }
 
         if (currentState == OPTIONSMENU) {
-            OptionMenu::OptionAction action = optionMenu.handleEvent(*event, window);
+            OptionMenu::OptionAction action = optionMenu.handleEvent(*event);
 
             if (action == OptionMenu::OptionAction::Back) {
                 bool fullscreen = optionMenu.isFullscreenEnabled();

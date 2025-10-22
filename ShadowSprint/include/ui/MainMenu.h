@@ -1,8 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-using namespace sf;
-
 class MainMenu {
 public:
     enum class MainMenuAction {
@@ -12,24 +10,24 @@ public:
         Quit
     };
 
-    MainMenu(RenderWindow& window);
+    MainMenu(sf::RenderWindow& window);
     void update(float dt);
-    MainMenuAction handleEvent(const Event& event, RenderWindow& window);
-    void draw(RenderWindow& window) const;
+    MainMenuAction handleEvent(const sf::Event& event);
+    void draw(sf::RenderWindow& window) const;
 
     void activate();
     void setFullscreen(bool enabled);
 
 private:
-    RenderWindow& window;
+    sf::RenderWindow& window;
 
-    Font font;
-    Text titleText;
-    Text playText;
-    Text optionText;
-    Text quitText;
+    sf::Font font;
+    sf::Text titleText;
+    sf::Text playText;
+    sf::Text optionText;
+    sf::Text quitText;
 
-    Clock activationClock;
+    sf::Clock activationClock;
     bool firstActivation = true;
-    const Time activationDelay = milliseconds(200);
+    const sf::Time activationDelay = sf::milliseconds(200);
 };
