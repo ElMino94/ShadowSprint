@@ -24,4 +24,13 @@ namespace UIUtils {
         text.setFillColor(color);
     }
 
+    inline void applyHoverEffect(sf::Text& text, const sf::RenderWindow& window, const sf::Color& normalColor = sf::Color::White, const sf::Color& hoverColor = sf::Color::Yellow) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        if (text.getGlobalBounds().contains(mousePos)) {
+            text.setFillColor(hoverColor);
+        }
+        else {
+            text.setFillColor(normalColor);
+        }
+    }
 }

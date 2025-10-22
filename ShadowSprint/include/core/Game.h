@@ -4,8 +4,7 @@
 #include "../ui/MainMenu.h"
 #include "../ui/OptionMenu.h"
 #include "../ui/InGameUI.h"
-
-using namespace sf;
+#include "../ui/PauseMenu.h"
 
 class Game {
 public:
@@ -17,14 +16,18 @@ public:
     GameState currentState;
 
 private:
-    RenderWindow window;
-    Clock clock;
+    sf::RenderWindow window;
+    sf::Clock clock;
 
     MainMenu mainMenu;
     OptionMenu optionMenu;
+    PauseMenu pauseMenu;
     InGameUI igUI;
 
     void processEvents();
     void update(float dt);
     void render();
+
+    void applyDisplaySettings(bool fullscreen, bool vsync);
+    void resetGame();
 };

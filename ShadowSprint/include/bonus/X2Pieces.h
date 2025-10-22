@@ -2,4 +2,3 @@
 class X2Pieces
 {
 };
-

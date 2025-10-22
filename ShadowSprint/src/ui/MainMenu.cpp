@@ -23,7 +23,11 @@ titleText(font), playText(font), optionText(font), quitText(font)
     positionText(quitText, window, 0.7f);
 }
 
-void MainMenu::update(float dt) {}
+void MainMenu::update(float dt) {
+    applyHoverEffect(playText, window);
+    applyHoverEffect(optionText, window);
+    applyHoverEffect(quitText, window);
+}
 
 MainMenu::MainMenuAction MainMenu::handleEvent(const sf::Event& event) {
     if (firstActivation && activationClock.getElapsedTime() < activationDelay) {

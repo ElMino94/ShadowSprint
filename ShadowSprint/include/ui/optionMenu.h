@@ -10,6 +10,14 @@ public:
         Back
     };
 
+    enum class ReturnContext {
+        MainMenu,
+        PauseMenu
+    };
+
+    void setReturnContext(ReturnContext context);
+    ReturnContext getReturnContext() const;
+
     OptionMenu(sf::RenderWindow& window);
     OptionAction handleEvent(const sf::Event& event);
     void update(float dt);
@@ -48,4 +56,6 @@ private:
     sf::Clock activationClock;
     bool firstActivation = true;
     const sf::Time activationDelay = sf::milliseconds(200);
+
+    ReturnContext returnContext = ReturnContext::MainMenu;
 };

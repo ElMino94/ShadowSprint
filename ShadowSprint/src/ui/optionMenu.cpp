@@ -89,7 +89,16 @@ OptionMenu::OptionAction OptionMenu::handleEvent(const Event& event) {
     return OptionAction::None;
 }
 
-void OptionMenu::update(float dt) {}
+void OptionMenu::update(float dt) {
+    applyHoverEffect(fullscreenText, window);
+    applyHoverEffect(vsyncText, window);
+    applyHoverEffect(backText, window);
+
+    applyHoverEffect(musicLeftArrow, window);
+    applyHoverEffect(musicRightArrow, window);
+    applyHoverEffect(sfxLeftArrow, window);
+    applyHoverEffect(sfxRightArrow, window);
+}
 
 void OptionMenu::draw(RenderWindow& window) const {
     window.draw(titleText);
@@ -185,4 +194,12 @@ void OptionMenu::updateVolumeText(bool fullscreen) {
 
     centerText(sfxRightArrow);
     sfxRightArrow.setPosition({ sfxVolumeText.getPosition().x + sfxRightOffset, sfxY });
+}
+
+void OptionMenu::setReturnContext(ReturnContext context) {
+    returnContext = context;
+}
+
+OptionMenu::ReturnContext OptionMenu::getReturnContext() const {
+    return returnContext;
 }
