@@ -18,7 +18,7 @@ Player::Player(float scale)
         std::cerr << "Erreur chargement Run.png\n";
     if (!jumpTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Jump.png"))
         std::cerr << "Erreur chargement Jump.png\n";
-    if (!blockTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Block.png"))
+    if (!blockTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Blocking.png"))
         std::cerr << "Erreur chargement Block.png\n";
 
     idleAnim = Animation(idleTexture, 8, 0.15f);
