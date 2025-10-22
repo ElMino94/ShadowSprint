@@ -138,12 +138,12 @@ void Game::update(float dt) {
             for (auto it = shurikens.begin(); it != shurikens.end();) {
                 it->update(dt);
 
+                bool remove = false;
+
                 if (utils::intersectsAABB(it->getBounds(), player.getBounds())) {
                     if (player.isBlocking()) {
-                        it = shurikens.erase(it);
-                        continue;
+                        remove = true;
                     } else {
-
                         gameOver = true;
                         player.setState(Player::State::Idle);
                         break;
@@ -151,10 +151,12 @@ void Game::update(float dt) {
                 }
 
                 if (it->isOffScreen()) {
+                    remove = true;
+                } 
+                if (remove)
                     it = shurikens.erase(it);
-                } else {
+                else
                     ++it;
-                }
             }
         }
 
