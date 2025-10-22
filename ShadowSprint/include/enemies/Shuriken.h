@@ -9,9 +9,12 @@ public:
     void update(float dt) override;
     void draw(sf::RenderWindow& window) override;
 
-    bool isOffScreen() const;
-    sf::FloatRect getBounds() const override;
+    void move(const sf::Vector2f& offset) override;
+    void setPosition(const sf::Vector2f& pos) override;
     sf::Vector2f getPosition() const override;
+    sf::FloatRect getBounds() const override;
+
+    bool isOffScreen() const;
 
 private:
     sf::Vector2f direction;

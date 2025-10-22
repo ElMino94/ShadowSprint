@@ -3,8 +3,8 @@
 
 class Entity {
 public:
-    Entity() = default;
-    virtual ~Entity() = default;
+    Entity();
+    virtual ~Entity();
 
     virtual void update(float dt) = 0;
     virtual void draw(sf::RenderWindow& window) = 0;

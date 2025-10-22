@@ -33,17 +33,18 @@ private:
     sf::Texture runTexture;
     sf::Texture jumpTexture;
     sf::Texture blockTexture;
-    sf::Sprite sprite;
+    sf::Sprite  sprite;
 
-    State currentState;
+    State  currentState;
+    bool   onGround;
+    bool   canDoubleJump;
+    bool   blocking;
+    float  gravity;
+    float  jumpForce;
+    float  velocityY;
+    float  playerScale;
 
-    bool onGround;
-    bool canDoubleJump;
-    bool blocking;
-    float gravity;
-    float jumpForce;
-    float velocityY;
-    float playerScale;
+    float  jumpForwardSpeed;
 
     void jump();
 };

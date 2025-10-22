@@ -13,7 +13,7 @@ namespace utils {
 }
 
 Game::Game()
-    : window(sf::VideoMode({ 1920u, 1080u }), "Runner 2D", sf::Style::None),
+    : window(sf::VideoMode({ 1920u, 1080u }), "ShadowSprint", sf::Style::Default),
     mainMenu(window),
     optionMenu(window),
     player(3.f),
@@ -129,11 +129,14 @@ void Game::update(float dt) {
 
             for (auto it = shurikens.begin(); it != shurikens.end();) {
                 (*it)->update(dt);
-                bool remove = false;
 
-                if (utils::intersectsAABB((*it)->getBounds(), player.getBounds())) {
+                sf::FloatRect playerBounds = player.getBounds();
+                sf::FloatRect shurikenBounds = (*it)->getBounds();
+
+                if (utils::intersectsAABB(playerBounds, shurikenBounds)) {
                     if (player.isBlocking()) {
-                        remove = true;
+                        it = shurikens.erase(it);
+                        continue;
                     }
                     else {
                         gameOver = true;
@@ -143,9 +146,6 @@ void Game::update(float dt) {
                 }
 
                 if ((*it)->isOffScreen())
-                    remove = true;
-
-                if (remove)
                     it = shurikens.erase(it);
                 else
                     ++it;
@@ -181,6 +181,20 @@ void Game::render() {
 
         for (auto& s : shurikens)
             s->draw(window);
+
+        sf::FloatRect pb = player.getBounds();
+        sf::RectangleShape playerBox(sf::Vector2f(pb.size));
+        playerBox.setPosition(pb.position);
+        playerBox.setFillColor(sf::Color(255, 0, 0, 80));
+        window.draw(playerBox);
+
+        for (auto& s : shurikens) {
+            sf::FloatRect sb = s->getBounds();
+            sf::RectangleShape shBox(sf::Vector2f(sb.size));
+            shBox.setPosition(sb.position);
+            shBox.setFillColor(sf::Color(0, 255, 0, 80));
+            window.draw(shBox);
+        }
 
         if (!gameStarted && countdown > 0.f)
             window.draw(countdownText);
