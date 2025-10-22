@@ -7,12 +7,12 @@ Shuriken::Shuriken(const sf::Vector2f& targetPos)
 	: speed(800.f)
 
 {
-	if (!texture.loadFromFile("../assets/shuriken.png")) {       //Refaire le chemin du png
+	if (!texture.loadFromFile("../assets/textures/Suriken/04.png")) {     
 		std::cerr << " Impossible de charger la texture \n";
 	}
 
 	sprite.setTexture(texture);
-	sprite.setScale({ 0.15f, 0.15f });
+	sprite.setScale(sf::Vector2f(0.15f, 0.15f));
 	
 	float startX = static_cast<float>(std::rand() % 1800 + 60);
 	float startY = -50.f;
@@ -29,7 +29,6 @@ Shuriken::Shuriken(const sf::Vector2f& targetPos)
 void Shuriken::update(float dt) {
 
 	move(direction * speed * dt);
-
 	sprite.rotate(sf::degrees(1000.f * dt));
 }
 

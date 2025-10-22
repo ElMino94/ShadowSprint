@@ -2,27 +2,40 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
-Player::Player()
+Player::Player(float scale)
     : onGround(true),
     canDoubleJump(false),
     blocking(false),
     gravity(2500.f),
     jumpForce(1000.f),
     velocityY(0.f),
-    currentState(State::Idle)
+    currentState(State::Idle),
+    playerScale(scale)
 {
-    if (!idleTexture.loadFromFile("../assets/Idle.png"))
+    if (!idleTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Idle.png"))
         std::cerr << "Erreur chargement Idle.png\n";
-    if (!runTexture.loadFromFile("../assets/Run.png"))
+    if (!runTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Run.png"))
         std::cerr << "Erreur chargement Run.png\n";
+    if (!jumpTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Jump.png"))
+        std::cerr << "Erreur chargement Jump.png\n";
+    if (!blockTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Block.png"))
+        std::cerr << "Erreur chargement Block.png\n";
 
-    idleAnim = Animation(idleTexture, 8, 0.12f, { 512, 512 });
-    runAnim = Animation(runTexture, 8, 0.08f, { 512, 512 });
+    idleAnim = Animation(idleTexture, 8, 0.15f);
+    runAnim = Animation(runTexture, 8, 0.08f);
+    jumpAnim = Animation(jumpTexture, 6, 0.10f);
+    blockAnim = Animation(blockTexture, 4, 0.12f);
 
     sprite.setTexture(idleTexture);
-    sprite.setScale({ 0.25f, 0.25f });
+    sf::Vector2u texSize = idleTexture.getSize();
+    sprite.setOrigin(
+        sf::Vector2f((texSize.x / 8.f) / 2.f, texSize.y)
+    );
+
+    sprite.setScale({ playerScale, playerScale });
     sprite.setPosition({ 300.f, 900.f });
 }
+
 void Player::handleInput() {
     blocking = false;
 
@@ -64,18 +77,16 @@ void Player::update(float dt) {
 
     switch (currentState) {
     case State::Idle:
-        idleAnim.update(dt);
-        idleAnim.applyToSprite(sprite);
+        idleAnim.update(sprite, dt);
         break;
     case State::Running:
-        runAnim.update(dt);
-        runAnim.applyToSprite(sprite);
-        break;
-    case State::Blocking:
-        idleAnim.applyToSprite(sprite);       // il ne faut pas laisser le idleanim
+        runAnim.update(sprite, dt);
         break;
     case State::Jumping:
-        runAnim.applyToSprite(sprite);       // refaire un autre truc pour le jump
+        jumpAnim.update(sprite, dt);
+        break;
+    case State::Blocking:
+        blockAnim.update(sprite, dt);
         break;
     }
 }

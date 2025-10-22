@@ -6,7 +6,7 @@ class Player : public Entity{
 public:
 	enum class State { Idle, Running, Jumping, Blocking };
 
-	Player();
+	Player(float scale = 3.f);
 
 	void handleInput();
 	void update(float dt) override;
@@ -22,18 +22,23 @@ private:
 
 	Animation idleAnim;
 	Animation runAnim;
+	Animation jumpAnim;
+	Animation blockAnim;
 	sf::Texture idleTexture;
 	sf::Texture runTexture;
+	sf::Texture jumpTexture;
+	sf::Texture blockTexture;
 
 	State currentState;
 
 	bool onGround;
 	bool canDoubleJump;
 	bool blocking;
-
 	float gravity;
 	float jumpForce;
 	float velocityY;
+
+	float playerScale;
 
 	void jump();
 

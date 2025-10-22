@@ -1,11 +1,37 @@
 #include "../../include/core/Game.h"
+#include <iostream>
+#include <cmath>
+
+namespace utils {
+    inline bool intersectsAABB(const sf::FloatRect& a, const sf::FloatRect& b)
+    {
+        return (a.position.x < b.position.x + b.size.x) &&
+            (a.position.x + a.size.x > b.position.x) &&
+            (a.position.y < b.position.y + b.size.y) &&
+            (a.position.y + a.size.y > b.position.y);
+    }
+}
 
 Game::Game()
     : window(sf::VideoMode({ 1920, 1080 }), "Runner 2d", sf::Style::None),
     currentState(MAINMENU),
-    mainMenu(window), optionMenu(window)
+    mainMenu(window), 
+    optionMenu(window),
+    player(),
+    font("../assets/fonts/samurai-blast.ttf"),
+    countdownText(font, "3", 200),
+    gameOverText(font, "Game Over", 150),
+    gameStarted(false),
+    gameOver(false),
+    countdown(3.f)
 {
     window.setFramerateLimit(60);
+    
+    countdownText.setFillColor(sf::Color::White);
+    countdownText.setPosition({ 900.f, 300.f });
+
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setPosition({ 600.f, 400.f });
 }
 
 void Game::run() {
@@ -78,31 +104,101 @@ void Game::processEvents() {
 }
 
 void Game::update(float dt) {
-    if (currentState == MAINMENU) {
+    switch (currentState) {
+    case MAINMENU:
         mainMenu.update(dt);
-    }
+        break;
 
-    if (currentState == OPTIONSMENU) {
+    case OPTIONSMENU:
         optionMenu.update(dt);
-    }
+        break;
 
-    if (currentState == PLAYING) {
+    case PLAYING:
+        if (!gameStarted) {
+            countdown -= dt;
+            if (countdown > 0.f) {
+                player.setState(Player::State::Idle);
+                countdownText.setString(std::to_string(static_cast<int>(std::ceil(countdown))));
+            }
+            else {
+                countdown = 0.f;
+                gameStarted = true;
+                player.setState(Player::State::Running);
+            }
+        }
 
+        else if (!gameOver) {
+            if (ShurikenClock.getElapsedTime().asSeconds() > 1.5f) {
+                ShurikenClock.restart();
+                shurikens.emplace_back(player.getBounds().position);
+            }
+
+            for (auto it = shurikens.begin(); it != shurikens.end();) {
+                it->update(dt);
+
+                if (utils::intersectsAABB(it->getBounds(), player.getBounds())) {
+                    if (player.isBlocking()) {
+                        it = shurikens.erase(it);
+                        continue;
+                    } else {
+
+                        gameOver = true;
+                        player.setState(Player::State::Idle);
+                        break;
+                    }
+                }
+
+                if (it->isOffScreen()) {
+                    it = shurikens.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
+
+        if (!gameOver)
+            player.handleInput();
+
+        player.update(dt);
+        break;
     }
 }
 
 void Game::render() {
     window.clear();
-    if (currentState == MAINMENU) {
+
+    switch (currentState) {
+    case MAINMENU:
         mainMenu.draw(window);
-    }
+        break;
 
-    if (currentState == OPTIONSMENU) {
+    case OPTIONSMENU:
         optionMenu.draw(window);
+        break;
+
+    case PLAYING: {
+        player.draw(window);
+
+        for (auto& s : shurikens)
+            s.draw(window);
+
+        if (!gameStarted && countdown > 0.f)
+            window.draw(countdownText);
+
+        if (gameOver)
+            window.draw(gameOverText);
+
+        break;
+    }
     }
 
-    if (currentState == PLAYING) {
-
-    }
     window.display();
+}
+
+void Game::resetGame() {
+    gameStarted = false;
+    gameOver = false;
+    countdown = 3.f;
+    player.reset();
+    shurikens.clear();
 }

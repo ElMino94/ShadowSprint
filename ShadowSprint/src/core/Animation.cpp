@@ -1,39 +1,37 @@
 #include "../../include/core/Animation.h"
 
-Animation::Animation()
-    : texture(nullptr), currentFrame(0), frameTime(0.1f), elapsed(0.f)
+Animation::Animation(Texture& tex,  int frameCount, float frameTime)
+    : texture(&tex),
+    frameCount(frameCount),
+    frameTime(frameTime),
+    currentFrame(0),
+    timer(0.f)
 {
+    Vector2u texSize = texture->getSize();
+    frameSize = Vector2i(texSize.x / frameCount, texSize.y);
 }
 
-Animation::Animation(sf::Texture& tex, int frameCount, float frameTime, sf::Vector2i frameSize)
-    : texture(&tex), frameTime(frameTime), currentFrame(0), elapsed(0.f)
-{
-    for (int i = 0; i < frameCount; ++i) {
-        frames.emplace_back(
-            sf::Vector2i(i * frameSize.x, 0),
-            sf::Vector2i(frameSize.x, frameSize.y)
-        );
-    }
-}
+void Animation::update(Sprite& sprite, float deltaTime) {
+    timer += deltaTime;
 
-void Animation::update(float dt) {
-    if (!texture || frames.empty()) return;
+    if (timer >= frameTime) {
+        timer = 0.f;
+        currentFrame++;
 
-    elapsed += dt;
-    if (elapsed >= frameTime) {
-        elapsed = 0.f;
-        currentFrame = (currentFrame + 1) % frames.size();
+        if (currentFrame >= frameCount)
+            currentFrame = 0; 
     }
-}
 
-void Animation::applyToSprite(sf::Sprite& sprite) {
-    if (texture && !frames.empty()) {
-        sprite.setTexture(*texture);
-        sprite.setTextureRect(frames[currentFrame]);
-    }
+    IntRect rect(
+        Vector2i(currentFrame * frameSize.x, 0),
+        frameSize
+    );
+
+    sprite.setTexture(*texture);
+    sprite.setTextureRect(rect);
 }
 
 void Animation::reset() {
     currentFrame = 0;
-    elapsed = 0.f;
+    timer = 0.f;
 }

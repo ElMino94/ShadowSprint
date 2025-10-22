@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 #include "../ui/MainMenu.h"
 #include "../ui/OptionMenu.h"
@@ -15,8 +16,6 @@ public:
 
     enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
 
-    GameState currentState;
-
 private:
     RenderWindow window;
     Clock clock;
@@ -24,7 +23,22 @@ private:
     MainMenu mainMenu;
     OptionMenu optionMenu;
 
+    Player player;
+    std::vector<Shuriken> shurikens;
+    Clock ShurikenClock;
+
+    bool gameStarted;
+    bool gameOver;
+    float countdown;
+    GameState currentState;
+
+    Font font;
+    Text countdownText;
+    Text gameOverText;
+
     void processEvents();
     void update(float dt);
     void render();
+
+    void resetGame();
 };
