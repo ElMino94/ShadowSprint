@@ -78,3 +78,27 @@ void MainMenu::activate() {
     activationClock.restart();
     firstActivation = true;
 }
+
+void MainMenu::setFullscreen(bool enabled) {
+    unsigned int titleSize = enabled ? 250 : 150;
+    unsigned int itemSize = enabled ? 100 : 60;
+
+    titleText.setCharacterSize(titleSize);
+    playText.setCharacterSize(itemSize);
+    optionText.setCharacterSize(itemSize);
+    quitText.setCharacterSize(itemSize);
+
+    Vector2u windowSize = window.getSize();
+
+    titleText.setOrigin(titleText.getLocalBounds().getCenter());
+    titleText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.15f });
+
+    playText.setOrigin(playText.getLocalBounds().getCenter());
+    playText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.4f });
+
+    optionText.setOrigin(optionText.getLocalBounds().getCenter());
+    optionText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.55f });
+
+    quitText.setOrigin(quitText.getLocalBounds().getCenter());
+    quitText.setPosition({ windowSize.x / 2.f, windowSize.y * 0.7f });
+}

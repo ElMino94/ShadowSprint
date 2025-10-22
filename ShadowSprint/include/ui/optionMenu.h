@@ -1,5 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iomanip>
+#include <sstream>
 
 using namespace sf;
 
@@ -16,9 +18,11 @@ public:
     void draw(RenderWindow& window) const;
 
     void activate();
+    void setFullscreen(bool enabled);
 
     bool isFullscreenEnabled() const;
     bool isVsyncEnabled() const;
+    void updateVolumeText(bool fullscreen);
 
 private:
     RenderWindow& window;
@@ -29,12 +33,17 @@ private:
 
     Text musicVolumeText;
     Text sfxVolumeText;
+    Text musicLeftArrow;
+    Text musicRightArrow;
+    Text sfxLeftArrow;
+    Text sfxRightArrow;
 
     Text fullscreenText;
     Text vsyncText;
 
     float musicVolume = 100.f;
     float sfxVolume = 100.f;
+
     bool fullscreen = true;
     bool vsync = true;
 

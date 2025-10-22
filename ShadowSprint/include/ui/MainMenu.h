@@ -18,6 +18,7 @@ public:
     void draw(RenderWindow& window) const;
 
     void activate();
+    void setFullscreen(bool enabled);
 
 private:
     RenderWindow& window;

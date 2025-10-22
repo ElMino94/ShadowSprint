@@ -53,25 +53,20 @@ void Game::processEvents() {
             OptionMenu::OptionAction action = optionMenu.handleEvent(*event, window);
 
             if (action == OptionMenu::OptionAction::Back) {
+                bool fullscreen = optionMenu.isFullscreenEnabled();
+                bool vsync = optionMenu.isVsyncEnabled();
+
+                sf::VideoMode mode = fullscreen ? sf::VideoMode::getDesktopMode() : sf::VideoMode({ 1280, 720 });
+                unsigned int style = fullscreen ? sf::Style::None : sf::Style::Default;
+
+                window.create(mode, "Runner 2d", style);
+                window.setFramerateLimit(60);
+                window.setVerticalSyncEnabled(vsync);
+
+                mainMenu.setFullscreen(fullscreen);
+                optionMenu.setFullscreen(fullscreen);
                 currentState = MAINMENU;
                 mainMenu.activate();
-            }
-
-            static bool lastFullscreen = optionMenu.isFullscreenEnabled();
-            static bool lastVsync = optionMenu.isVsyncEnabled();
-
-            bool currentFullscreen = optionMenu.isFullscreenEnabled();
-            bool currentVsync = optionMenu.isVsyncEnabled();
-
-            if (currentFullscreen != lastFullscreen || currentVsync != lastVsync) {
-                lastFullscreen = currentFullscreen;
-                lastVsync = currentVsync;
-
-                //VideoMode mode = currentFullscreen ? VideoMode::getDesktopMode() : VideoMode(1280, 720);
-                //unsigned int style = currentFullscreen ? Style::Fullscreen : Style::Default;
-
-
-                window.setVerticalSyncEnabled(currentVsync);
             }
         }
     }
