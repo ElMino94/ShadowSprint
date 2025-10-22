@@ -4,41 +4,46 @@
 #include <iostream>
 
 Shuriken::Shuriken(const sf::Vector2f& targetPos)
-	: speed(800.f)
-
+    : speed(400.f), rotationSpeed(360.f)
 {
-	if (!texture.loadFromFile("../assets/textures/Suriken/04.png")) {     
-		std::cerr << " Impossible de charger la texture \n";
-	}
+    float radius = 15.f;
+    shape = sf::CircleShape(radius, 6); 
+    shape.setFillColor(sf::Color(255, 220, 0));  
+    shape.setOutlineColor(sf::Color::Black);
+    shape.setOutlineThickness(2.f);
+    shape.setOrigin(sf::Vector2f(radius, radius));
 
-	sprite.setTexture(texture);
-	
-	sf::Vector2u texSize = texture.getSize();
-	sprite.setOrigin(sf::Vector2f(texSize.x / 2.f, texSize.y / 2.f));
-	sprite.setScale(sf::Vector2f(1.f, 1.f));
+    float startX = static_cast<float>(std::rand() % 1700 + 100);
+    float startY = -100.f;
+    shape.setPosition(sf::Vector2f(startX, startY));
 
-	float startX = static_cast<float>(std::rand() % 1700 + 100);
-	float startY = -60.f;
-	sprite.setPosition(sf::Vector2f(startX, startY));
+    sf::Vector2f dir = targetPos - shape.getPosition();
+    float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+    direction = (length > 0.f) ? dir / length : sf::Vector2f(0.f, 1.f);
 
-	sf::Vector2f dir = targetPos - sprite.getPosition();
-	float lenght = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-
-	if (lenght < 0.f)
-		direction = dir / lenght;
-	else
-		direction = sf::Vector2f(0.f, 1.f);
+    std::cout << " Shuriken spawn X=" << startX
+        << " Y=" << startY
+        << " Target=(" << targetPos.x << ", " << targetPos.y << ")\n";
 }
 
 void Shuriken::update(float dt) {
+    shape.move(direction * speed * dt);
+    shape.rotate(sf::degrees(rotationSpeed * dt));
+}
 
-	move(direction * speed * dt);
-	sprite.rotate(sf::degrees(720.f * dt));
+void Shuriken::draw(sf::RenderWindow& window) {
+    window.draw(shape);
+}
+
+sf::FloatRect Shuriken::getBounds() const {
+    return shape.getGlobalBounds();
+}
+
+sf::Vector2f Shuriken::getPosition() const {
+    return shape.getPosition();
 }
 
 bool Shuriken::isOffScreen() const {
-
-	sf::Vector2f pos = sprite.getPosition();
-	return (pos.y > 1200.f || pos.x < -200.f || pos.x > 2100.f);
-
+    sf::Vector2f pos = shape.getPosition();
+    return (pos.y > 1200.f || pos.x < -200.f || pos.x > 2100.f);
 }

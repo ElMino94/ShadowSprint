@@ -1,44 +1,44 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <vector>
-
-#include "../ui/MainMenu.h"
-#include "../ui/OptionMenu.h"
 #include "../player/Player.h"
+#include "../ui/MainMenu.h"
+#include "../ui/optionMenu.h"
 #include "../enemies/Shuriken.h"
-
-using namespace sf;
 
 class Game {
 public:
     Game();
     void run();
 
-    enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
-
 private:
-    RenderWindow window;
-    Clock clock;
+    enum State {
+        MAINMENU,
+        OPTIONSMENU,
+        PLAYING
+    };
 
+    sf::RenderWindow window;
     MainMenu mainMenu;
     OptionMenu optionMenu;
-
     Player player;
-    std::vector<Shuriken> shurikens;
-    Clock ShurikenClock;
 
+    std::vector<std::unique_ptr<Shuriken>> shurikens;
+
+    sf::Font font;
+    sf::Text countdownText;
+    sf::Text gameOverText;
+
+    sf::Clock shurikenClock;
     bool gameStarted;
     bool gameOver;
     float countdown;
-    GameState currentState;
 
-    Font font;
-    Text countdownText;
-    Text gameOverText;
+    State currentState;
 
     void processEvents();
     void update(float dt);
     void render();
-
     void resetGame();
 };

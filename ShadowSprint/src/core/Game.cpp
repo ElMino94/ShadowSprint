@@ -13,25 +13,25 @@ namespace utils {
 }
 
 Game::Game()
-    : window(sf::VideoMode({ 1920, 1080 }), "Runner 2d", sf::Style::None),
-    currentState(MAINMENU),
-    mainMenu(window), 
+    : window(sf::VideoMode({ 1920u, 1080u }), "Runner 2D", sf::Style::None),
+    mainMenu(window),
     optionMenu(window),
-    player(),
+    player(3.f),
     font("../assets/fonts/samurai-blast.ttf"),
     countdownText(font, "3", 200),
-    gameOverText(font, "Game Over", 150),
+    gameOverText(font, "GAME OVER", 150),
     gameStarted(false),
     gameOver(false),
-    countdown(3.f)
+    countdown(3.f),
+    currentState(MAINMENU)
 {
     window.setFramerateLimit(60);
-    
+
     countdownText.setFillColor(sf::Color::White);
-    countdownText.setPosition({ 900.f, 300.f });
+    countdownText.setPosition(sf::Vector2f(900.f, 300.f));
 
     gameOverText.setFillColor(sf::Color::Red);
-    gameOverText.setPosition({ 600.f, 400.f });
+    gameOverText.setPosition(sf::Vector2f(600.f, 400.f));
 }
 
 void Game::run() {
@@ -56,11 +56,10 @@ void Game::processEvents() {
 
         if (currentState == MAINMENU) {
             MainMenu::MainMenuAction action = mainMenu.handleEvent(*event, window);
-
             switch (action) {
             case MainMenu::MainMenuAction::Play:
                 currentState = PLAYING;
-                mainMenu.activate();
+                resetGame();
                 break;
             case MainMenu::MainMenuAction::Options:
                 currentState = OPTIONSMENU;
@@ -69,7 +68,6 @@ void Game::processEvents() {
             case MainMenu::MainMenuAction::Quit:
                 window.close();
                 break;
-            case MainMenu::MainMenuAction::None:
             default:
                 break;
             }
@@ -77,26 +75,15 @@ void Game::processEvents() {
 
         if (currentState == OPTIONSMENU) {
             OptionMenu::OptionAction action = optionMenu.handleEvent(*event, window);
-
             if (action == OptionMenu::OptionAction::Back) {
                 currentState = MAINMENU;
                 mainMenu.activate();
             }
 
-            static bool lastFullscreen = optionMenu.isFullscreenEnabled();
             static bool lastVsync = optionMenu.isVsyncEnabled();
-
-            bool currentFullscreen = optionMenu.isFullscreenEnabled();
             bool currentVsync = optionMenu.isVsyncEnabled();
-
-            if (currentFullscreen != lastFullscreen || currentVsync != lastVsync) {
-                lastFullscreen = currentFullscreen;
+            if (currentVsync != lastVsync) {
                 lastVsync = currentVsync;
-
-                //VideoMode mode = currentFullscreen ? VideoMode::getDesktopMode() : VideoMode(1280, 720);
-                //unsigned int style = currentFullscreen ? Style::Fullscreen : Style::Default;
-
-
                 window.setVerticalSyncEnabled(currentVsync);
             }
         }
@@ -113,46 +100,51 @@ void Game::update(float dt) {
         optionMenu.update(dt);
         break;
 
-    case PLAYING:
+    case PLAYING: {
         if (!gameStarted) {
             countdown -= dt;
+            player.setState(Player::State::Idle);
+
             if (countdown > 0.f) {
-                player.setState(Player::State::Idle);
                 countdownText.setString(std::to_string(static_cast<int>(std::ceil(countdown))));
             }
             else {
                 countdown = 0.f;
                 gameStarted = true;
                 player.setState(Player::State::Running);
-            }
-        }
 
-        else if (!gameOver) {
-            if (ShurikenClock.getElapsedTime().asSeconds() > 1.5f) {
-                ShurikenClock.restart();
+                shurikens.clear();
                 auto bounds = player.getBounds();
                 sf::Vector2f target = bounds.position + (bounds.size * 0.5f);
-                shurikens.emplace_back(target);
+                shurikens.push_back(std::make_unique<Shuriken>(target));
+            }
+        }
+        else if (!gameOver) {
+            if (shurikenClock.getElapsedTime().asSeconds() > 1.5f) {
+                shurikenClock.restart();
+                auto bounds = player.getBounds();
+                sf::Vector2f target = bounds.position + (bounds.size * 0.5f);
+                shurikens.push_back(std::make_unique<Shuriken>(target));
             }
 
             for (auto it = shurikens.begin(); it != shurikens.end();) {
-                it->update(dt);
-
+                (*it)->update(dt);
                 bool remove = false;
 
-                if (utils::intersectsAABB(it->getBounds(), player.getBounds())) {
+                if (utils::intersectsAABB((*it)->getBounds(), player.getBounds())) {
                     if (player.isBlocking()) {
                         remove = true;
-                    } else {
+                    }
+                    else {
                         gameOver = true;
                         player.setState(Player::State::Idle);
                         break;
                     }
                 }
 
-                if (it->isOffScreen()) {
+                if ((*it)->isOffScreen())
                     remove = true;
-                } 
+
                 if (remove)
                     it = shurikens.erase(it);
                 else
@@ -164,6 +156,10 @@ void Game::update(float dt) {
             player.handleInput();
 
         player.update(dt);
+        break;
+    }
+
+    default:
         break;
     }
 }
@@ -184,7 +180,7 @@ void Game::render() {
         player.draw(window);
 
         for (auto& s : shurikens)
-            s.draw(window);
+            s->draw(window);
 
         if (!gameStarted && countdown > 0.f)
             window.draw(countdownText);
