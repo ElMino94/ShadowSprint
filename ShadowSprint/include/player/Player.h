@@ -18,7 +18,7 @@ public:
 	bool isBlocking() const;
 	bool isOnGround() const;
 
-private:
+protected:
 
 	Animation idleAnim;
 	Animation runAnim;
@@ -41,6 +41,5 @@ private:
 	float playerScale;
 
 	void jump();
-
 };
 

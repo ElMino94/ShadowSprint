@@ -130,7 +130,9 @@ void Game::update(float dt) {
         else if (!gameOver) {
             if (ShurikenClock.getElapsedTime().asSeconds() > 1.5f) {
                 ShurikenClock.restart();
-                shurikens.emplace_back(player.getBounds().position);
+                auto bounds = player.getBounds();
+                sf::Vector2f target = bounds.position + (bounds.size * 0.5f);
+                shurikens.emplace_back(target);
             }
 
             for (auto it = shurikens.begin(); it != shurikens.end();) {
