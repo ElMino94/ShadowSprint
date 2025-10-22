@@ -3,6 +3,7 @@
 
 #include "../ui/MainMenu.h"
 #include "../ui/OptionMenu.h"
+#include "../ui/InGameUI.h"
 
 using namespace sf;
 
@@ -21,6 +22,7 @@ private:
 
     MainMenu mainMenu;
     OptionMenu optionMenu;
+    InGameUI igUI;
 
     void processEvents();
     void update(float dt);

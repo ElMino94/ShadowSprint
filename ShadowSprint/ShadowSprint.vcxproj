@@ -18,6 +18,7 @@
     <ClInclude Include="include\enemies\Shuriken.h" />
     <ClInclude Include="include\map\Map.h" />
     <ClInclude Include="include\player\Player.h" />
+    <ClInclude Include="include\ui\InGameUI.h" />
     <ClInclude Include="include\ui\MainMenu.h" />
     <ClInclude Include="include\ui\optionMenu.h" />
     <ClInclude Include="include\ui\UIUtils.h" />
@@ -31,6 +32,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map\Map.cpp" />
     <ClCompile Include="src\player\Player.cpp" />
+    <ClCompile Include="src\ui\InGameUI.cpp" />
     <ClCompile Include="src\ui\MainMenu.cpp" />
     <ClCompile Include="src\ui\optionMenu.cpp" />
   </ItemGroup>

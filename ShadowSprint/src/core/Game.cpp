@@ -3,7 +3,7 @@
 Game::Game()
     : window(sf::VideoMode({ 1920, 1080 }), "Runner 2d", sf::Style::None),
     currentState(MAINMENU),
-    mainMenu(window), optionMenu(window)
+    mainMenu(window), optionMenu(window), igUI(window)
 {
     window.setFramerateLimit(60);
 }
@@ -82,7 +82,7 @@ void Game::update(float dt) {
     }
 
     if (currentState == PLAYING) {
-
+        igUI.update(dt, 100.f);
     }
 }
 
@@ -97,7 +97,7 @@ void Game::render() {
     }
 
     if (currentState == PLAYING) {
-
+        igUI.draw(window);
     }
     window.display();
 }

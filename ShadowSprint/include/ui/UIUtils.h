@@ -13,6 +13,12 @@ namespace UIUtils {
         text.setPosition({ size.x / 2.f, size.y * yRatio });
     }
 
+    inline void positionTextTopRight(sf::Text& text, const sf::RenderWindow& window, float offsetY = 20.f, float marginX = 30.f) {
+        text.setOrigin(text.getLocalBounds().getCenter());
+        sf::Vector2u size = window.getSize();
+        text.setPosition({ size.x - marginX, offsetY });
+    }
+
     inline void styleText(sf::Text& text, unsigned int size, const sf::Color& color = sf::Color::White) {
         text.setCharacterSize(size);
         text.setFillColor(color);
