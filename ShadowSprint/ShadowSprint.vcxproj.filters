@@ -86,7 +86,7 @@
     <ClInclude Include="include\ui\OptionMenu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\ui\UIUtils.h">
+    <ClInclude Include="include\ui\Utils.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\ui\InGameUI.h">

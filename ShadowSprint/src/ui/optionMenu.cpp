@@ -1,8 +1,8 @@
 #include "../../include/ui/OptionMenu.h"
-#include "../../include/ui/UIUtils.h"
+#include "../../include/ui/Utils.h"
 
 using namespace sf;
-using namespace UIUtils;
+using namespace Utils;
 
 OptionMenu::OptionMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
 titleText(font), backText(font), musicVolumeText(font), sfxVolumeText(font),

@@ -24,7 +24,7 @@
     <ClInclude Include="include\ui\MainMenu.h" />
     <ClInclude Include="include\ui\OptionMenu.h" />
     <ClInclude Include="include\ui\PauseMenu.h" />
-    <ClInclude Include="include\ui\UIUtils.h" />
+    <ClInclude Include="include\ui\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bonus\BonusLife.cpp" />

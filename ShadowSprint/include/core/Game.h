@@ -9,6 +9,7 @@
 #include "../ui/PauseMenu.h"
 #include "../ui/optionMenu.h"
 #include "../enemies/Shuriken.h"
+#include "../ui/Utils.h"
 
 class Game {
 public:
@@ -18,10 +19,10 @@ public:
     enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
 
     GameState currentState;
+
 private:
     sf::RenderWindow window;
     sf::Clock clock;
-
 
     MainMenu mainMenu;
     OptionMenu optionMenu;
@@ -37,19 +38,15 @@ private:
     sf::Text gameOverText;
 
     sf::Clock shurikenClock;
+
     bool gameStarted;
     bool gameOver;
     float countdown;
-
-    State currentState;
-
 
     void processEvents();
     void update(float dt);
     void render();
     void resetGame();
-};
 
     void applyDisplaySettings(bool fullscreen, bool vsync);
-    void resetGame();
 };

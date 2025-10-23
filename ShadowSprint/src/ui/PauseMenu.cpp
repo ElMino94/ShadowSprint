@@ -1,8 +1,8 @@
 #include "../../include/ui/PauseMenu.h"
-#include "../../include/ui/UIUtils.h"
+#include "../../include/ui/Utils.h"
 
 using namespace sf;
-using namespace UIUtils;
+using namespace Utils;
 
 PauseMenu::PauseMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
 titleText(font), resumeText(font), optionsText(font), restartText(font), backText(font)

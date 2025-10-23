@@ -1,8 +1,8 @@
 #include "../../include/ui/InGameUI.h"
-#include "../../include/ui/UIUtils.h"
+#include "../../include/ui/Utils.h"
 
 using namespace sf;
-using namespace UIUtils;
+using namespace Utils;
 
 InGameUI::InGameUI(sf::RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
 distanceText(font), scoreBackgroundTexture("../assets/textures/roundedRectangle.png"), scoreBackgroundSprite(scoreBackgroundTexture)

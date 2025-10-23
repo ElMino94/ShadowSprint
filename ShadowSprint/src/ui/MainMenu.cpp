@@ -1,8 +1,8 @@
 #include "../../include/ui/MainMenu.h"
-#include "../../include/ui/UIUtils.h"
+#include "../../include/ui/Utils.h"
 
 using namespace sf;
-using namespace UIUtils;
+using namespace Utils;
 
 MainMenu::MainMenu(RenderWindow& windowRef) : window(windowRef), font("../assets/fonts/samurai-blast.ttf"),
 titleText(font), playText(font), optionText(font), quitText(font)
