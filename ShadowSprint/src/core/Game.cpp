@@ -180,7 +180,7 @@ void Game::update(float dt) {
                         }
                         else {
                             gameOver = false;
-                            player.setState(Player::State::Idle);
+                            //player.setState(Player::State::Idle);
                             break;
                         }
                     }

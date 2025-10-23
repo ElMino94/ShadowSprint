@@ -2,55 +2,36 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
-Player::Player(float scale)
-    : onGround(true),
-    canDoubleJump(false),
-    blocking(false),
-    gravity(2500.f),
-    jumpForce(1000.f),
-    velocityY(0.f),
+using namespace sf;
+
+Player::Player(float scale) : onGround(true), canDoubleJump(false), blocking(false),
+    gravity(2500.f), jumpForce(1000.f), velocityY(0.f),
     currentState(State::Idle),
     playerScale(scale),
-    idleTexture(), runTexture(), jumpTexture(), blockTexture(),
+    idleTexture("../assets/textures/Martial Hero/Sprites/Idle.png"), runTexture("../assets/textures/Martial Hero/Sprites/Run.png"), jumpTexture("../assets/textures/Martial Hero/Sprites/Jump.png"), fallTexture("../assets/textures/Martial Hero/Sprites/Fall.png"), blockTexture("../assets/textures/Martial Hero/Sprites/Block.png"),
     sprite(idleTexture),
-    idleTestTexture("../assets/textures/Martial Hero/Sprites/idle_test.png"),
-    idleTestSprite(idleTestTexture)
+    idleAnim(idleTexture, 8, 0.15f),
+    runAnim(runTexture, 8, 0.08f),
+    jumpAnim(jumpTexture, 2, 0.10f),
+    fallAnim(fallTexture, 2, 0.10f),
+    blockAnim(blockTexture, 6, 0.12f, false)
 {
-    if (!idleTestTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/idle_test.png"))
-        std::cerr << "Erreur chargement Idle Test.png\n";
-
-    /*    if (!idleTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Idle.png"))
-        std::cerr << "Erreur chargement Idle.png\n";
-    if (!runTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Run.png"))
-        std::cerr << "Erreur chargement Run.png\n";
-    if (!jumpTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Jump.png"))
-        std::cerr << "Erreur chargement Jump.png\n";
-    if (!blockTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Block.png"))
-        std::cerr << "Erreur chargement Block.png\n";
-
-    idleAnim = Animation(idleTexture, 8, 0.15f);
-    runAnim = Animation(runTexture, 8, 0.08f);
-    jumpAnim = Animation(jumpTexture, 6, 0.10f);
-    blockAnim = Animation(blockTexture, 4, 0.12f);
-
     sprite.setTexture(idleTexture);
 
-    sf::Vector2u texSize = idleTexture.getSize();
-    sprite.setOrigin(sf::Vector2f(
+    Vector2u texSize = idleTexture.getSize();
+    sprite.setOrigin(Vector2f(
         static_cast<float>(texSize.x) / 8.f / 2.f,
         static_cast<float>(texSize.y)
-    ));*/
+    ));
 
-    idleTestSprite.setOrigin(idleTestSprite.getLocalBounds().getCenter());
-
-    idleTestSprite.setScale(sf::Vector2f(playerScale, playerScale));
-    idleTestSprite.setPosition(sf::Vector2f(300.f, 900.f));
+    sprite.setScale(Vector2f(playerScale, playerScale));
+    sprite.setPosition(Vector2f(300.f, 900.f));
 }
 
 void Player::handleInput() {
     blocking = false;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Space)) {
+    if (Keyboard::isKeyPressed(Keyboard::Scancode::Space)) {
         if (onGround) {
             jump();
             onGround = false;
@@ -64,7 +45,7 @@ void Player::handleInput() {
         }
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)) {
+    if (Keyboard::isKeyPressed(Keyboard::Scancode::LShift)) {
         blocking = true;
         setState(State::Blocking);
     }
@@ -72,75 +53,116 @@ void Player::handleInput() {
 
 void Player::jump() {
     velocityY = -jumpForce;
-
 }
 
 void Player::update(float dt) {
     velocityY += gravity * dt;
+    sprite.move(Vector2f(0.f, velocityY * dt));
 
-    idleTestSprite.move(sf::Vector2f(0.f, velocityY * dt));
+    if (velocityY > 0.f && !onGround && currentState == State::Jumping) {
+        setState(State::Falling);
+    }
 
-    if (idleTestSprite.getPosition().y >= 900.f) {
-        idleTestSprite.setPosition(sf::Vector2f(idleTestSprite.getPosition().x, 900.f));
+    if (sprite.getPosition().y >= 900.f) {
+        sprite.setPosition(Vector2f(sprite.getPosition().x, 900.f));
         velocityY = 0.f;
         onGround = true;
 
-        if (currentState == State::Jumping)
+        if (currentState == State::Jumping || currentState == State::Falling)
             setState(State::Running);
     }
-    /*
+
+    if (currentState == State::Blocking && blockAnim.isFinished()) {
+        setState(State::Running);
+    }
+
     // Anim
     switch (currentState) {
     case State::Idle:     idleAnim.update(sprite, dt); break;
     case State::Running:  runAnim.update(sprite, dt);  break;
     case State::Jumping:  jumpAnim.update(sprite, dt); break;
+    case State::Falling:  fallAnim.update(sprite, dt); break;
     case State::Blocking: blockAnim.update(sprite, dt); break;
-    }*/
+    }
 }
 
-void Player::draw(sf::RenderWindow& window) {
-    window.draw(idleTestSprite);
+void Player::draw(RenderWindow& window) {
+    window.draw(sprite);
+}
+
+int Player::getFrameCountForState(State state) const {
+    switch (state) {
+    case State::Idle: return 8;
+    case State::Running: return 8;
+    case State::Jumping: return 2;
+    case State::Falling: return 2;
+    case State::Blocking: return 6;
+    default: return 1;
+    }
 }
 
 void Player::setState(State newState) {
     if (currentState != newState) {
-        sf::Vector2f oldPos = idleTestSprite.getPosition();
-        float oldBottom = oldPos.y + idleTestSprite.getGlobalBounds().size.y;
+        Vector2f oldPos = sprite.getPosition();
+        float oldBottom = oldPos.y + sprite.getGlobalBounds().size.y;
 
         currentState = newState;
 
+        Texture* newTexture = nullptr;
+
         switch (currentState) {
-        case State::Idle:     std::cout << "Idle"; break; //idleAnim.reset();  sprite.setTexture(idleTexture);  break;
-        case State::Running:  std::cout << "Running"; break; //runAnim.reset();   sprite.setTexture(runTexture);   break;
-        case State::Jumping:  std::cout << "Jumping"; break; //jumpAnim.reset();  sprite.setTexture(jumpTexture);  break;
-        case State::Blocking: std::cout << "Blocking"; break; //blockAnim.reset(); sprite.setTexture(blockTexture); break;
+        case State::Idle:
+            idleAnim.reset();
+            newTexture = &idleTexture;
+            break;
+        case State::Running:
+            runAnim.reset();
+            newTexture = &runTexture;
+            break;
+        case State::Jumping:
+            jumpAnim.reset();
+            newTexture = &jumpTexture;
+            break;
+        case State::Falling:
+            fallAnim.reset();
+            newTexture = &fallTexture;
+            break;
+        case State::Blocking:
+            blockAnim.reset();
+            newTexture = &blockTexture;
+            break;
         }
 
-        float newHeight = idleTestSprite.getGlobalBounds().size.y;
-        idleTestSprite.setPosition(sf::Vector2f(oldPos.x, oldBottom - newHeight));
+        if (newTexture) {
+            int frameCount = getFrameCountForState(currentState);
 
-        if (currentState == State::Jumping) {
-            
+            sprite.setTexture(*newTexture);
+
+            Vector2u texSize = newTexture->getSize();
+            float frameWidth = static_cast<float>(texSize.x) / frameCount;
+            float frameHeight = static_cast<float>(texSize.y);
+
+            sprite.setOrigin(Vector2f(frameWidth / 2.f, frameHeight));
+
+            float newHeight = sprite.getGlobalBounds().size.y;
+            sprite.setPosition(Vector2f(oldPos.x, oldBottom - newHeight));
         }
     }
 }
 
-void Player::move(const sf::Vector2f& offset) { idleTestSprite.move(offset); }
-void Player::setPosition(const sf::Vector2f& pos) { idleTestSprite.setPosition(pos); }
-sf::Vector2f Player::getPosition() const { return idleTestSprite.getPosition(); }
-
-sf::FloatRect Player::getBounds() const {
-    return idleTestSprite.getGlobalBounds();
-}
-
 void Player::reset() {
     setState(State::Idle);
-    idleTestSprite.setPosition(sf::Vector2f(300.f, 900.f));
+    sprite.setPosition(Vector2f(300.f, 900.f));
     velocityY = 0.f;
     onGround = true;
     canDoubleJump = false;
     blocking = false;
 }
 
+
+FloatRect Player::getBounds() const { return sprite.getGlobalBounds(); }
+void Player::move(const Vector2f& offset) { sprite.move(offset); }
+void Player::setPosition(const Vector2f& pos) { sprite.setPosition(pos); }
+Vector2f Player::getPosition() const { return sprite.getPosition(); }
 bool Player::isBlocking() const { return blocking; }
 bool Player::isOnGround() const { return onGround; }
