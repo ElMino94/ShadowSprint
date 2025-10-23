@@ -29,6 +29,9 @@ private:
     Animation jumpAnim;
     Animation blockAnim;
 
+    sf::Texture idleTestTexture;
+    sf::Sprite idleTestSprite;
+
     sf::Texture idleTexture;
     sf::Texture runTexture;
     sf::Texture jumpTexture;
@@ -43,8 +46,6 @@ private:
     float  jumpForce;
     float  velocityY;
     float  playerScale;
-
-    float  jumpForwardSpeed;
 
     void jump();
 };
