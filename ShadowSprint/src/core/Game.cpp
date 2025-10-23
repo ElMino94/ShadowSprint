@@ -1,13 +1,39 @@
 #include "../../include/core/Game.h"
+#include <iostream>
+#include <cmath>
+
+namespace utils {
+    inline bool intersectsAABB(const sf::FloatRect& a, const sf::FloatRect& b)
+    {
+        return (a.position.x < b.position.x + b.size.x) &&
+            (a.position.x + a.size.x > b.position.x) &&
+            (a.position.y < b.position.y + b.size.y) &&
+            (a.position.y + a.size.y > b.position.y);
+    }
+}
 
 using namespace sf;
 
 Game::Game()
-    : window(sf::VideoMode({ 1920, 1080 }), "Runner 2d", sf::Style::None),
+    : window(sf::VideoMode({ 1920u, 1080u }), "ShadowSprint", sf::Style::Default),
     currentState(MAINMENU),
     mainMenu(window), optionMenu(window), pauseMenu(window), igUI(window)
+    player(3.f),
+    font("../assets/fonts/samurai-blast.ttf"),
+    countdownText(font, "3", 200),
+    gameOverText(font, "GAME OVER", 150),
+    gameStarted(false),
+    gameOver(false),
+    countdown(3.f),
+    currentState(MAINMENU)
 {
     window.setFramerateLimit(60);
+
+    countdownText.setFillColor(sf::Color::White);
+    countdownText.setPosition(sf::Vector2f(900.f, 300.f));
+
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setPosition(sf::Vector2f(600.f, 400.f));
 }
 
 void Game::run() {
@@ -43,7 +69,7 @@ void Game::processEvents() {
             switch (action) {
             case MainMenu::MainMenuAction::Play:
                 currentState = PLAYING;
-                mainMenu.activate();
+                resetGame();
                 break;
             case MainMenu::MainMenuAction::Options:
                 currentState = OPTIONSMENU;
@@ -53,7 +79,6 @@ void Game::processEvents() {
             case MainMenu::MainMenuAction::Quit:
                 window.close();
                 break;
-            case MainMenu::MainMenuAction::None:
             default:
                 break;
             }
@@ -111,12 +136,72 @@ void Game::processEvents() {
 }
 
 void Game::update(float dt) {
-    if (currentState == MAINMENU) {
+    switch (currentState) {
+    case MAINMENU:
         mainMenu.update(dt);
-    }
+        break;
 
-    if (currentState == OPTIONSMENU) {
+    case OPTIONSMENU:
         optionMenu.update(dt);
+        break;
+
+    case PLAYING: {
+        if (!gameStarted) {
+            countdown -= dt;
+            player.setState(Player::State::Idle);
+
+            if (countdown > 0.f) {
+                countdownText.setString(std::to_string(static_cast<int>(std::ceil(countdown))));
+            }
+            else {
+                countdown = 0.f;
+                gameStarted = true;
+                player.setState(Player::State::Running);
+
+                shurikens.clear();
+                auto bounds = player.getBounds();
+                sf::Vector2f target = bounds.position + (bounds.size * 0.5f);
+                shurikens.push_back(std::make_unique<Shuriken>(target));
+            }
+        }
+        else if (!gameOver) {
+            if (shurikenClock.getElapsedTime().asSeconds() > 1.5f) {
+                shurikenClock.restart();
+                auto bounds = player.getBounds();
+                sf::Vector2f target = bounds.position + (bounds.size * 0.5f);
+                shurikens.push_back(std::make_unique<Shuriken>(target));
+            }
+
+            for (auto it = shurikens.begin(); it != shurikens.end();) {
+                (*it)->update(dt);
+
+                sf::FloatRect playerBounds = player.getBounds();
+                sf::FloatRect shurikenBounds = (*it)->getBounds();
+
+                if (utils::intersectsAABB(playerBounds, shurikenBounds)) {
+                    if (player.isBlocking()) {
+                        it = shurikens.erase(it);
+                        continue;
+                    }
+                    else {
+                        gameOver = true;
+                        player.setState(Player::State::Idle);
+                        break;
+                    }
+                }
+
+                if ((*it)->isOffScreen())
+                    it = shurikens.erase(it);
+                else
+                    ++it;
+            }
+        }
+
+        if (!gameOver)
+            player.handleInput();
+
+        player.update(dt);
+        break;
     }
 
     if (currentState == PAUSEMENU) {
@@ -130,12 +215,44 @@ void Game::update(float dt) {
 
 void Game::render() {
     window.clear();
-    if (currentState == MAINMENU) {
-        mainMenu.draw(window);
-    }
 
-    if (currentState == OPTIONSMENU) {
+    switch (currentState) {
+    case MAINMENU:
+        mainMenu.draw(window);
+        break;
+
+    case OPTIONSMENU:
         optionMenu.draw(window);
+        break;
+
+    case PLAYING: {
+        player.draw(window);
+
+        for (auto& s : shurikens)
+            s->draw(window);
+
+        sf::FloatRect pb = player.getBounds();
+        sf::RectangleShape playerBox(sf::Vector2f(pb.size));
+        playerBox.setPosition(pb.position);
+        playerBox.setFillColor(sf::Color(255, 0, 0, 80));
+        window.draw(playerBox);
+
+        for (auto& s : shurikens) {
+            sf::FloatRect sb = s->getBounds();
+            sf::RectangleShape shBox(sf::Vector2f(sb.size));
+            shBox.setPosition(sb.position);
+            shBox.setFillColor(sf::Color(0, 255, 0, 80));
+            window.draw(shBox);
+        }
+
+        if (!gameStarted && countdown > 0.f)
+            window.draw(countdownText);
+
+        if (gameOver)
+            window.draw(gameOverText);
+
+        break;
+    }
     }
 
     if (currentState == PAUSEMENU) {
@@ -163,5 +280,9 @@ void Game::applyDisplaySettings(bool fullscreen, bool vsync) {
 }
 
 void Game::resetGame() {
-    // Reset player, level, score, etc.
+    gameStarted = false;
+    gameOver = false;
+    countdown = 3.f;
+    player.reset();
+    shurikens.clear();
 }
