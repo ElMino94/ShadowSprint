@@ -15,7 +15,7 @@ Game::Game()
     gameOverText(font, "GAME OVER", 150),
     gameStarted(false),
     gameOver(false),
-    countdown(3.f)
+    countdown(3.f), playerSpeed(1.f)
 {
     window.setFramerateLimit(60);
 
@@ -179,7 +179,7 @@ void Game::update(float dt) {
                             continue;
                         }
                         else {
-                            gameOver = true;
+                            gameOver = false;
                             player.setState(Player::State::Idle);
                             break;
                         }
@@ -192,11 +192,14 @@ void Game::update(float dt) {
                 }
             }
 
-            if (!gameOver)
+            if (!gameOver && gameStarted) {
                 player.handleInput();
+                score += 2.f * playerSpeed * dt;
+            }
 
+            igUI.update(dt, score);
             player.update(dt);
-            igUI.update(dt, 100.f);
+
             break;
         }
     }
@@ -271,6 +274,7 @@ void Game::resetGame() {
     gameStarted = false;
     gameOver = false;
     countdown = 3.f;
+    score = 0.f;
     player.reset();
     shurikens.clear();
 }

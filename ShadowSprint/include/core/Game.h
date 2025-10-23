@@ -42,6 +42,8 @@ private:
     bool gameStarted;
     bool gameOver;
     float countdown;
+    float playerSpeed;
+    float score = 0.f;
 
     void processEvents();
     void update(float dt);
