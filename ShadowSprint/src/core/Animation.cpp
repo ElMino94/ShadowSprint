@@ -1,5 +1,6 @@
 #include "../../include/core/Animation.h"
 
+Animation::Animation(){}
 Animation::Animation(Texture& tex, int frameCount, float frameTime, bool loop)
     : texture(&tex),
     frameCount(frameCount),

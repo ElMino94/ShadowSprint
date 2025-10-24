@@ -5,6 +5,7 @@ using namespace sf;
 
 class Animation {
 public:
+    Animation();
     Animation(Texture& tex, int frameCount, float frameTime, bool loop = true);
 
     void update(Sprite& sprite, float deltaTime);

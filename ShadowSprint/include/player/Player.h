@@ -36,7 +36,7 @@ private:
     sf::Texture jumpTexture;
     sf::Texture fallTexture;
     sf::Texture blockTexture;
-    sf::Sprite  sprite;
+    std::unique_ptr<sf::Sprite> sprite;
 
     State  currentState;
     bool   onGround;
