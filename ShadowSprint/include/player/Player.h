@@ -4,7 +4,7 @@
 
 class Player : public Entity {
 public:
-    enum class State { Idle, Running, Jumping, Blocking };
+    enum class State { Idle, Running, Jumping, Falling, Blocking };
 
     Player(float scale = 3.f);
 
@@ -17,6 +17,7 @@ public:
     sf::Vector2f getPosition() const override;
     sf::FloatRect getBounds() const override;
 
+    int getFrameCountForState(State state) const;
     void setState(State newState);
     void reset();
 
@@ -27,16 +28,15 @@ private:
     Animation idleAnim;
     Animation runAnim;
     Animation jumpAnim;
+    Animation fallAnim;
     Animation blockAnim;
-
-    sf::Texture idleTestTexture;
-    sf::Sprite idleTestSprite;
 
     sf::Texture idleTexture;
     sf::Texture runTexture;
     sf::Texture jumpTexture;
+    sf::Texture fallTexture;
     sf::Texture blockTexture;
-    sf::Sprite  sprite;
+    std::unique_ptr<sf::Sprite> sprite;
 
     State  currentState;
     bool   onGround;
