@@ -24,6 +24,17 @@ Game::Game()
 
     gameOverText.setFillColor(Color::Red);
     gameOverText.setPosition(Vector2f(600.f, 400.f));
+
+    if (!slowBonusTexture.loadFromFile("../assets/textures/bonus_slowmode.png"))
+        std::cerr << "Erreur chargement bonus_slowmode.png\n";
+    if (!invincibilityBonusTexture.loadFromFile("../assets/textures/bonus_invincibility.png"))
+        std::cerr << "Erreur chargement bonus_invincibility.png\n";
+    if (!scoreBonusTexture.loadFromFile("../assets/textures/bonus_x2.png"))
+        std::cerr << "Erreur chargement bonus_x2.png\n";
+
+    activeBonuses.push_back(std::make_unique<SlowModeBonus>(slowBonusTexture, Vector2f(1400.f, 600.f), 5.f));
+    activeBonuses.push_back(std::make_unique<InvincibilityBonus>(invincibilityBonusTexture, Vector2f(1600.f, 600.f), 5.f));
+    activeBonuses.push_back(std::make_unique<ScoreMultiplierBonus>(scoreBonusTexture, Vector2f(1800.f, 600.f), 5.f));
 }
 
 void Game::run() {
@@ -141,6 +152,21 @@ void Game::update(float dt) {
             break;
 
         case PLAYING: {
+            /*for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
+                (*it)->update(dt);
+
+                if (intersectsAABB(player.getBounds(), (*it)->getBounds())) {
+                    (*it)->apply(player);
+                    it = activeBonuses.erase(it); // ramassé
+                }
+                else if ((*it)->isExpired()) {
+                    it = activeBonuses.erase(it); // expiré
+                }
+                else {
+                    ++it;
+                }
+            }*/
+
             if (!gameStarted) {
                 countdown -= dt;
                 player.setState(Player::State::Idle);
@@ -242,6 +268,20 @@ void Game::render() {
                 window.draw(shBox);
             }
 
+            for (const auto& bonus : activeBonuses)
+                bonus->draw(window);
+
+            for (const auto& bonus : activeBonuses) {
+                auto bounds = bonus->getBounds();
+                sf::Vector2f pos = bounds.position;
+                sf::Vector2f size = bounds.size;
+
+                sf::RectangleShape box(size);
+                box.setPosition(pos);
+                box.setFillColor(sf::Color(0, 0, 255, 100));
+                window.draw(box);
+            }
+
             if (!gameStarted && countdown > 0.f)
                 window.draw(countdownText);
 
@@ -277,4 +317,5 @@ void Game::resetGame() {
     score = 0.f;
     player.reset();
     shurikens.clear();
+    activeBonuses.clear();
 }

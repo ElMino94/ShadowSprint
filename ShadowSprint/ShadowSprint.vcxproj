@@ -11,9 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\bonus\BonusLife.h" />
-    <ClInclude Include="include\bonus\SlowMode.h" />
-    <ClInclude Include="include\bonus\X2Pieces.h" />
+    <ClInclude Include="include\bonus\Bonus.h" />
+    <ClInclude Include="include\bonus\InvincibilityBonus.h" />
+    <ClInclude Include="include\bonus\ScoreMultiplierBonus.h" />
+    <ClInclude Include="include\bonus\SlowModeBonus.h" />
     <ClInclude Include="include\core\Animation.h" />
     <ClInclude Include="include\core\Entity.h" />
     <ClInclude Include="include\core\Game.h" />
@@ -27,9 +28,10 @@
     <ClInclude Include="include\ui\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\bonus\BonusLife.cpp" />
-    <ClCompile Include="src\bonus\SlowMode.cpp" />
-    <ClCompile Include="src\bonus\X2Pieces.cpp" />
+    <ClCompile Include="src\bonus\Bonus.cpp" />
+    <ClCompile Include="src\bonus\InvincibilityBonus.cpp" />
+    <ClCompile Include="src\bonus\ScoreMultiplierBonus.cpp" />
+    <ClCompile Include="src\bonus\SlowModeBonus.cpp" />
     <ClCompile Include="src\core\Animation.cpp" />
     <ClCompile Include="src\core\Entity.cpp" />
     <ClCompile Include="src\core\Game.cpp" />

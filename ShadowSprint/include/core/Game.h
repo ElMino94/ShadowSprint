@@ -7,9 +7,11 @@
 #include "../ui/OptionMenu.h"
 #include "../ui/InGameUI.h"
 #include "../ui/PauseMenu.h"
-#include "../ui/optionMenu.h"
 #include "../enemies/Shuriken.h"
 #include "../ui/Utils.h"
+#include "../bonus/InvincibilityBonus.h"
+#include "../bonus/ScoreMultiplierBonus.h"
+#include "../bonus/SlowModeBonus.h"
 
 class Game {
 public:
@@ -38,6 +40,12 @@ private:
     sf::Text gameOverText;
 
     sf::Clock shurikenClock;
+
+    sf::Texture slowBonusTexture;
+    sf::Texture invincibilityBonusTexture;
+    sf::Texture scoreBonusTexture;
+
+    std::vector<std::unique_ptr<Bonus>> activeBonuses;
 
     bool gameStarted;
     bool gameOver;
