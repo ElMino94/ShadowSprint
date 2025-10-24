@@ -54,10 +54,10 @@
     <ClCompile Include="src\core\Animation.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\map\TileMap.cpp">
+    <ClCompile Include="src\map\ParallaxBackground.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\map\ParallaxBackground.cpp">
+    <ClCompile Include="src\map\Map.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,10 +101,10 @@
     <ClInclude Include="include\core\Animation.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\map\TileMap.h">
+    <ClInclude Include="include\map\ParallaxBackground.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\map\ParallaxBackground.h">
+    <ClInclude Include="include\map\Map.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

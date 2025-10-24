@@ -1,4 +1,5 @@
 #include "../../include/core/Game.h"
+#include "../../include/map/Map.h"
 #include <iostream>
 #include <cmath>
 
