@@ -7,17 +7,16 @@
 #include "../ui/OptionMenu.h"
 #include "../ui/InGameUI.h"
 #include "../ui/PauseMenu.h"
-#include "../ui/optionMenu.h"
 #include "../enemies/Shuriken.h"
+#include "../map/Map.h"
 #include "../ui/Utils.h"
 
 class Game {
 public:
     Game();
     void run();
-    
-    enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
 
+    enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
     GameState currentState;
 
 private:
@@ -28,8 +27,9 @@ private:
     OptionMenu optionMenu;
     PauseMenu pauseMenu;
     InGameUI igUI;
-    
+
     Player player;
+    std::unique_ptr<Map> map; 
 
     std::vector<std::unique_ptr<Shuriken>> shurikens;
 

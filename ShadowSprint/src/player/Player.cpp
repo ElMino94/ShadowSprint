@@ -47,9 +47,11 @@ Player::Player(float scale)
     idleTestSprite.setPosition(sf::Vector2f(300.f, 900.f));
 }
 
-void Player::handleInput() {
+void Player::handleInput()
+{
     blocking = false;
 
+    // Jump
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Space)) {
         if (onGround) {
             jump();
@@ -64,63 +66,39 @@ void Player::handleInput() {
         }
     }
 
+    // Block
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)) {
         blocking = true;
         setState(State::Blocking);
     }
 }
 
-void Player::jump() {
+void Player::jump()
+{
     velocityY = -jumpForce;
-
 }
 
-void Player::update(float dt) {
+void Player::update(float dt)
+{
+    // Gravity
     velocityY += gravity * dt;
-
-    idleTestSprite.move(sf::Vector2f(0.f, velocityY * dt));
-
-    if (idleTestSprite.getPosition().y >= 900.f) {
-        idleTestSprite.setPosition(sf::Vector2f(idleTestSprite.getPosition().x, 900.f));
-        velocityY = 0.f;
-        onGround = true;
-
-        if (currentState == State::Jumping)
-            setState(State::Running);
-    }
-    /*
-    // Anim
-    switch (currentState) {
-    case State::Idle:     idleAnim.update(sprite, dt); break;
-    case State::Running:  runAnim.update(sprite, dt);  break;
-    case State::Jumping:  jumpAnim.update(sprite, dt); break;
-    case State::Blocking: blockAnim.update(sprite, dt); break;
-    }*/
+    idleTestSprite.move({ 0.f, velocityY * dt });
 }
 
-void Player::draw(sf::RenderWindow& window) {
+void Player::draw(sf::RenderWindow& window)
+{
     window.draw(idleTestSprite);
 }
 
-void Player::setState(State newState) {
+void Player::setState(State newState)
+{
     if (currentState != newState) {
-        sf::Vector2f oldPos = idleTestSprite.getPosition();
-        float oldBottom = oldPos.y + idleTestSprite.getGlobalBounds().size.y;
-
         currentState = newState;
-
         switch (currentState) {
-        case State::Idle:     std::cout << "Idle"; break; //idleAnim.reset();  sprite.setTexture(idleTexture);  break;
-        case State::Running:  std::cout << "Running"; break; //runAnim.reset();   sprite.setTexture(runTexture);   break;
-        case State::Jumping:  std::cout << "Jumping"; break; //jumpAnim.reset();  sprite.setTexture(jumpTexture);  break;
-        case State::Blocking: std::cout << "Blocking"; break; //blockAnim.reset(); sprite.setTexture(blockTexture); break;
-        }
-
-        float newHeight = idleTestSprite.getGlobalBounds().size.y;
-        idleTestSprite.setPosition(sf::Vector2f(oldPos.x, oldBottom - newHeight));
-
-        if (currentState == State::Jumping) {
-            
+        case State::Idle:     std::cout << "Idle\n"; break;
+        case State::Running:  std::cout << "Running\n"; break;
+        case State::Jumping:  std::cout << "Jumping\n"; break;
+        case State::Blocking: std::cout << "Blocking\n"; break;
         }
     }
 }
@@ -128,14 +106,12 @@ void Player::setState(State newState) {
 void Player::move(const sf::Vector2f& offset) { idleTestSprite.move(offset); }
 void Player::setPosition(const sf::Vector2f& pos) { idleTestSprite.setPosition(pos); }
 sf::Vector2f Player::getPosition() const { return idleTestSprite.getPosition(); }
+sf::FloatRect Player::getBounds() const { return idleTestSprite.getGlobalBounds(); }
 
-sf::FloatRect Player::getBounds() const {
-    return idleTestSprite.getGlobalBounds();
-}
-
-void Player::reset() {
+void Player::reset()
+{
     setState(State::Idle);
-    idleTestSprite.setPosition(sf::Vector2f(300.f, 900.f));
+    idleTestSprite.setPosition({ 300.f, 900.f });
     velocityY = 0.f;
     onGround = true;
     canDoubleJump = false;
@@ -144,3 +120,6 @@ void Player::reset() {
 
 bool Player::isBlocking() const { return blocking; }
 bool Player::isOnGround() const { return onGround; }
+void Player::setOnGround(bool v) { onGround = v; }
+float Player::getVelocityY() const { return velocityY; }
+void Player::setVelocityY(float v) { velocityY = v; }

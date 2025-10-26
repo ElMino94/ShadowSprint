@@ -23,6 +23,11 @@ public:
     bool isBlocking() const;
     bool isOnGround() const;
 
+    // === Fonctions d'accès pour Game / Map ===
+    void setOnGround(bool v);
+    float getVelocityY() const;
+    void setVelocityY(float v);
+
 private:
     Animation idleAnim;
     Animation runAnim;
@@ -36,7 +41,7 @@ private:
     sf::Texture runTexture;
     sf::Texture jumpTexture;
     sf::Texture blockTexture;
-    sf::Sprite  sprite;
+    sf::Sprite sprite;
 
     State  currentState;
     bool   onGround;
