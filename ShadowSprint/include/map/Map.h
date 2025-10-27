@@ -23,9 +23,6 @@ public:
     float update(float dt);
     void draw(sf::RenderWindow& window);
 
-    // Collision
-    bool resolvePlayerCollisions(sf::FloatRect& playerBounds, sf::Vector2f& velocity);
-
     // (Pickups éventuels)
     int tryConsumePickup(const sf::FloatRect& playerBounds);
 

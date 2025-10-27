@@ -113,27 +113,6 @@ void Map::draw(RenderWindow& window) {
         window.draw(tile);
 }
 
-bool Map::resolvePlayerCollisions(sf::FloatRect& playerBounds, sf::Vector2f& velocity) {
-    bool onGround = false;
-
-    for (auto& tile : tiles) {
-        sf::FloatRect tileBounds(tile.getPosition(), tileSize);
-
-        sf::Vector2f correction(0.f, 0.f);
-        if (Utils::resolveAABB(playerBounds, tileBounds, correction)) {
-
-            playerBounds.position.x += correction.x;
-            playerBounds.position.y += correction.y;
-
-            if (correction.y < 0.f)
-                onGround = true;
-        }
-    }
-
-    return onGround;
-}
-
-
 int Map::tryConsumePickup(const FloatRect&) {
     return 0; 
 }

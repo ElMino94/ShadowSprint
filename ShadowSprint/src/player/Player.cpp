@@ -75,13 +75,8 @@ void Player::update(float dt) {
         setState(State::Falling);
     }
 
-    if (sprite->getPosition().y >= 900.f) {
-        sprite->setPosition(Vector2f(sprite->getPosition().x, 900.f));
-        velocityY = 0.f;
-        onGround = true;
-
-        if (currentState == State::Jumping || currentState == State::Falling)
-            setState(State::Running);
+    if (onGround && (currentState == State::Falling || currentState == State::Jumping)) {
+        setState(State::Running);
     }
 
     if (currentState == State::Blocking && blockAnim.isFinished()) {
@@ -198,7 +193,23 @@ void Player::updateBonusTimer(float dt) {
     );
 }
 
-FloatRect Player::getBounds() const { return sprite->getGlobalBounds(); }
+sf::FloatRect Player::getBounds() const {
+    sf::Vector2f pos = sprite->getPosition();
+    sf::Vector2f scale = sprite->getScale();
+    sf::IntRect texRect = sprite->getTextureRect();
+
+    float frameWidth = static_cast<float>(texRect.size.x) * scale.x;
+    float frameHeight = static_cast<float>(texRect.size.y) * scale.y;
+
+    float hitboxWidth = frameWidth * 0.18f;
+    float hitboxHeight = frameHeight * 0.28f;
+
+    float hitboxLeft = pos.x - hitboxWidth / 2.f;
+    float hitboxTop = pos.y - hitboxHeight * 2.3f; 
+
+    return sf::FloatRect({ hitboxLeft, hitboxTop }, { hitboxWidth, hitboxHeight });
+}
+
 void Player::move(const Vector2f& offset) { sprite->move(offset); }
 void Player::setPosition(const Vector2f& pos) { sprite->setPosition(pos); }
 Vector2f Player::getPosition() const { return sprite->getPosition(); }

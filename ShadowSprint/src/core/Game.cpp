@@ -168,6 +168,7 @@ void Game::update(float dt) {
                 else if ((*it)->isOffScreen()) {
                     it = activeBonuses.erase(it);
                 }
+
                 else {
                     ++it;
                 }
@@ -230,33 +231,30 @@ void Game::update(float dt) {
                 score += 2.f * playerSpeed * dt * player.getScoreMultiplier();
             }
 
-            igUI.update(dt, score);
             player.update(dt);
             player.updateBonusTimer(dt);
 
-            sf::FloatRect bounds = player.getBounds();
             sf::Vector2f vel(0.f, player.getVelocityY());
-            bool grounded = map->resolvePlayerCollisions(bounds, vel);
-            std::cout << "vel.y = " << vel.y << ", grounded = " << grounded << ", player.y = " << player.getPosition().y << "\n";
 
-            sf::Vector2f newCenter(
-                bounds.position.x + bounds.size.x * 0.5f,
-                bounds.position.y + bounds.size.y * 0.5f
-            );
+            constexpr float playerFootY = 1210.f;
 
-            if (grounded) {
-                player.setVelocityY(0.f);
+            bool grounded = player.getPosition().y >= playerFootY;
+
+            if (grounded && player.getVelocityY() >= 0.f) {
+                vel.y = 0.f;
                 player.setOnGround(true);
             }
+
             else {
                 player.setOnGround(false);
             }
+
+            player.move(vel * dt);
 
             if (player.getPosition().y > window.getSize().y + 200.f) {
                 gameOver = true;
                 std::cout << " Player fell off the map!" << std::endl;
             }
-            player.move(vel * dt);
 
             shurikenSpawnTimer += dt;
             if (shurikenSpawnTimer > 2.f) {
@@ -309,10 +307,11 @@ void Game::render() {
             for (auto& s : shurikens)
                 s->draw(window);
 
-            FloatRect pb = player.getBounds();
-            RectangleShape playerBox(Vector2f(pb.size));
+            sf::FloatRect pb = player.getBounds();
+            sf::RectangleShape playerBox;
+            playerBox.setSize(pb.size);
             playerBox.setPosition(pb.position);
-            playerBox.setFillColor(Color(255, 0, 0, 80));
+            playerBox.setFillColor(sf::Color(255, 0, 0, 80));
             window.draw(playerBox);
 
             for (auto& s : shurikens) {
