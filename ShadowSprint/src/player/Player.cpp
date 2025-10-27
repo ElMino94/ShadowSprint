@@ -4,8 +4,7 @@
 
 using namespace sf;
 
-Player::Player(float scale)
-    : onGround(true), canDoubleJump(false), blocking(false),
+Player::Player(float scale) : onGround(true), canDoubleJump(false), blocking(false),
     gravity(2500.f), jumpForce(1000.f), velocityY(0.f),
     currentState(State::Idle),
     playerScale(scale),
@@ -69,11 +68,8 @@ void Player::jump()
     velocityY = -jumpForce;
 }
 
-void Player::update(float dt)
-{
-    // Gravity
+void Player::update(float dt) {
     velocityY += gravity * dt;
-    sprite->move(Vector2f(0.f, velocityY * dt));
 
     if (velocityY > 0.f && !onGround && currentState == State::Jumping) {
         setState(State::Falling);
@@ -116,8 +112,7 @@ int Player::getFrameCountForState(State state) const {
     }
 }
 
-void Player::setState(State newState)
-{
+void Player::setState(State newState) {
     if (currentState != newState) {
         Vector2f oldPos = sprite->getPosition();
         float oldBottom = oldPos.y + sprite->getGlobalBounds().size.y;
@@ -203,10 +198,13 @@ void Player::updateBonusTimer(float dt) {
     );
 }
 
-
 FloatRect Player::getBounds() const { return sprite->getGlobalBounds(); }
 void Player::move(const Vector2f& offset) { sprite->move(offset); }
 void Player::setPosition(const Vector2f& pos) { sprite->setPosition(pos); }
 Vector2f Player::getPosition() const { return sprite->getPosition(); }
 bool Player::isBlocking() const { return blocking; }
 bool Player::isOnGround() const { return onGround; }
+
+void Player::setOnGround(bool v) { onGround = v; }
+float Player::getVelocityY() const { return velocityY; }
+void Player::setVelocityY(float v) { velocityY = v; }

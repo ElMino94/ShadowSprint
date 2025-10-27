@@ -4,9 +4,9 @@
 #include <algorithm>
 
 using namespace sf;
+using namespace Utils;
 
-Game::Game()
-    : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Default),
+Game::Game() : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Default),
     currentState(MAINMENU),
     mainMenu(window), optionMenu(window), pauseMenu(window), igUI(window),
     player(3.f),
@@ -129,18 +129,21 @@ void Game::processEvents() {
 
 void Game::update(float dt) {
     switch (currentState) {
-    case MAINMENU:
-        mainMenu.update(dt);
-        break;
-    case OPTIONSMENU:
-        optionMenu.update(dt);
-        break;
-    case PAUSEMENU:
-        pauseMenu.update(dt);
-        break;
-    case PLAYING: {
-        float mapSpeed = map ? map->update(dt) : 0.f;
 
+        case MAINMENU:
+            mainMenu.update(dt);
+            break;
+
+        case OPTIONSMENU:
+            optionMenu.update(dt);
+            break;
+
+        case PAUSEMENU:
+            pauseMenu.update(dt);
+            break;
+
+        case PLAYING: {
+            float mapSpeed = map ? map->update(dt) : 0.f;
 
             if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
                 bonusSpawnClock.restart();
@@ -188,6 +191,7 @@ void Game::update(float dt) {
                     shurikens.push_back(std::make_unique<Shuriken>(target));
                 }
             }
+
             else if (!gameOver) {
                 if (shurikenClock.getElapsedTime().asSeconds() > 1.5f) {
                     shurikenClock.restart();
@@ -230,9 +234,10 @@ void Game::update(float dt) {
             player.update(dt);
             player.updateBonusTimer(dt);
 
-            sf::FloatRect bounds = player.getBounds();  
+            sf::FloatRect bounds = player.getBounds();
             sf::Vector2f vel(0.f, player.getVelocityY());
             bool grounded = map->resolvePlayerCollisions(bounds, vel);
+            std::cout << "vel.y = " << vel.y << ", grounded = " << grounded << ", player.y = " << player.getPosition().y << "\n";
 
             sf::Vector2f newCenter(
                 bounds.position.x + bounds.size.x * 0.5f,
@@ -251,7 +256,7 @@ void Game::update(float dt) {
                 gameOver = true;
                 std::cout << " Player fell off the map!" << std::endl;
             }
-            player.setPosition(newCenter);
+            player.move(vel * dt);
 
             shurikenSpawnTimer += dt;
             if (shurikenSpawnTimer > 2.f) {
@@ -261,16 +266,6 @@ void Game::update(float dt) {
 
             for (auto& s : shurikens)
                 s->update(dt);
-
-            for (auto& s : shurikens) {
-                const sf::FloatRect a = s->getBounds();      
-                const sf::FloatRect b = player.getBounds();  
-                if (Utils::intersectsAABB(a, b)) {
-                    gameOver = true;
-                    std::cout << " Player hit by a shuriken!\n";
-                    break;
-                }
-            }
 
             shurikens.erase(
                 std::remove_if(shurikens.begin(), shurikens.end(),
@@ -286,8 +281,7 @@ void Game::update(float dt) {
         }
 
         igUI.update(dt, score);
-        break;
-    }
+        break;            
     }
 }
 
