@@ -24,6 +24,16 @@ public:
     bool isBlocking() const;
     bool isOnGround() const;
 
+
+    void updateBonusTimer(float dt);
+
+    void activateInvincibility(float duration);
+    void activateSlowMode(float duration);
+    void activateScoreMultiplier(float multiplier, float duration);
+    float getScoreMultiplier() const;
+    bool isInvincible() const;
+    bool isSlowMode() const;
+
 private:
     Animation idleAnim;
     Animation runAnim;
@@ -48,4 +58,24 @@ private:
     float  playerScale;
 
     void jump();
+
+
+    struct BonusEffect {
+        bool active = false;
+        float duration = 0.f;
+        float timer = 0.f;
+    };
+
+    BonusEffect invincibilityEffect;
+    BonusEffect slowModeEffect;
+
+    bool invincible = false;
+    bool slowMode = false;
+
+    struct MultiplierInstance {
+        float duration;
+        float timer;
+    };
+
+    std::vector<MultiplierInstance> activeMultipliers;
 };

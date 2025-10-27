@@ -8,11 +8,12 @@ Bonus::Bonus(const sf::Texture& texture, const sf::Vector2f& position, float dur
 
     sf::Vector2u texSize = texture.getSize();
     sprite->setOrigin(sf::Vector2f(texSize.x / 2.f, texSize.y / 2.f));
-    sprite->setScale(sf::Vector2f(2.f, 2.f));
+    sprite->setScale(sf::Vector2f(0.4f, 0.4f));
 }
 
 void Bonus::update(float dt) {
     timer += dt;
+    sprite->move(velocity * dt);
     sprite->move(sf::Vector2f(0.f, std::sin(timer * 3.f) * 0.5f));
 }
 
@@ -31,4 +32,8 @@ sf::FloatRect Bonus::getBounds() const {
 sf::Vector2f Bonus::getCenter() const {
     auto bounds = sprite->getGlobalBounds();
     return bounds.position + bounds.size / 2.f;
+}
+
+bool Bonus::isOffScreen() const {
+    return sprite->getGlobalBounds().getCenter().x < 0.f;
 }

@@ -13,6 +13,7 @@ public:
     void update(float dt);
     void draw(sf::RenderWindow& window);
     bool isExpired() const;
+    bool isOffScreen() const;
 
     sf::FloatRect getBounds() const;
     sf::Vector2f getCenter() const;
@@ -21,4 +22,5 @@ protected:
     std::unique_ptr<sf::Sprite> sprite;
     float timer = 0.f;
     float duration;
+    sf::Vector2f velocity{ -200.f, 0.f };
 };

@@ -41,6 +41,9 @@ private:
 
     sf::Clock shurikenClock;
 
+    sf::Clock bonusSpawnClock;
+    float bonusSpawnInterval = 2.f;
+
     sf::Texture slowBonusTexture;
     sf::Texture invincibilityBonusTexture;
     sf::Texture scoreBonusTexture;
@@ -59,4 +62,6 @@ private:
     void resetGame();
 
     void applyDisplaySettings(bool fullscreen, bool vsync);
+
+    void spawnRandomBonus();
 };

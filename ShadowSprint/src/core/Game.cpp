@@ -31,10 +31,6 @@ Game::Game()
         std::cerr << "Erreur chargement bonus_invincibility.png\n";
     if (!scoreBonusTexture.loadFromFile("../assets/textures/bonus_x2.png"))
         std::cerr << "Erreur chargement bonus_x2.png\n";
-
-    activeBonuses.push_back(std::make_unique<SlowModeBonus>(slowBonusTexture, Vector2f(1400.f, 600.f), 5.f));
-    activeBonuses.push_back(std::make_unique<InvincibilityBonus>(invincibilityBonusTexture, Vector2f(1600.f, 600.f), 5.f));
-    activeBonuses.push_back(std::make_unique<ScoreMultiplierBonus>(scoreBonusTexture, Vector2f(1800.f, 600.f), 5.f));
 }
 
 void Game::run() {
@@ -152,20 +148,33 @@ void Game::update(float dt) {
             break;
 
         case PLAYING: {
-            /*for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
+            if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
+                bonusSpawnClock.restart();
+                spawnRandomBonus();
+            }
+
+            for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
                 (*it)->update(dt);
 
                 if (intersectsAABB(player.getBounds(), (*it)->getBounds())) {
                     (*it)->apply(player);
-                    it = activeBonuses.erase(it); // ramassé
+
+                    if (dynamic_cast<InvincibilityBonus*>(it->get()))
+                        igUI.addBonusIcon(invincibilityBonusTexture, 5.f);
+                    else if (dynamic_cast<SlowModeBonus*>(it->get()))
+                        igUI.addBonusIcon(slowBonusTexture, 5.f);
+                    else if (dynamic_cast<ScoreMultiplierBonus*>(it->get()))
+                        igUI.addBonusIcon(scoreBonusTexture, 5.f);
+
+                    it = activeBonuses.erase(it);
                 }
-                else if ((*it)->isExpired()) {
-                    it = activeBonuses.erase(it); // expiré
+                else if ((*it)->isOffScreen()) {
+                    it = activeBonuses.erase(it);
                 }
                 else {
                     ++it;
                 }
-            }*/
+            }
 
             if (!gameStarted) {
                 countdown -= dt;
@@ -194,19 +203,19 @@ void Game::update(float dt) {
                 }
 
                 for (auto it = shurikens.begin(); it != shurikens.end();) {
-                    (*it)->update(dt);
+                    float shurikenSpeedFactor = player.isSlowMode() ? 0.5f : 1.f;
+                    (*it)->update(dt * shurikenSpeedFactor);
 
                     FloatRect playerBounds = player.getBounds();
                     FloatRect shurikenBounds = (*it)->getBounds();
 
                     if (intersectsAABB(playerBounds, shurikenBounds)) {
-                        if (player.isBlocking()) {
+                        if (player.isBlocking() || player.isInvincible()) {
                             it = shurikens.erase(it);
                             continue;
                         }
                         else {
-                            gameOver = false;
-                            //player.setState(Player::State::Idle);
+                            //gameOver = true;
                             break;
                         }
                     }
@@ -220,11 +229,12 @@ void Game::update(float dt) {
 
             if (!gameOver && gameStarted) {
                 player.handleInput();
-                score += 2.f * playerSpeed * dt;
+                score += 2.f * playerSpeed * dt * player.getScoreMultiplier();
             }
 
             igUI.update(dt, score);
             player.update(dt);
+            player.updateBonusTimer(dt);
 
             break;
         }
@@ -271,17 +281,6 @@ void Game::render() {
             for (const auto& bonus : activeBonuses)
                 bonus->draw(window);
 
-            for (const auto& bonus : activeBonuses) {
-                auto bounds = bonus->getBounds();
-                sf::Vector2f pos = bounds.position;
-                sf::Vector2f size = bounds.size;
-
-                sf::RectangleShape box(size);
-                box.setPosition(pos);
-                box.setFillColor(sf::Color(0, 0, 255, 100));
-                window.draw(box);
-            }
-
             if (!gameStarted && countdown > 0.f)
                 window.draw(countdownText);
 
@@ -318,4 +317,26 @@ void Game::resetGame() {
     player.reset();
     shurikens.clear();
     activeBonuses.clear();
+}
+
+void Game::spawnRandomBonus() {
+    float x = 2000.f;
+    float y = static_cast<float>(std::rand() % 400 + 500);
+
+    int type = std::rand() % 3;
+    std::unique_ptr<Bonus> bonus;
+
+    switch (type) {
+    case 0:
+        bonus = std::make_unique<SlowModeBonus>(slowBonusTexture, sf::Vector2f(x, y), 5.f);
+        break;
+    case 1:
+        bonus = std::make_unique<InvincibilityBonus>(invincibilityBonusTexture, sf::Vector2f(x, y), 5.f);
+        break;
+    case 2:
+        bonus = std::make_unique<ScoreMultiplierBonus>(scoreBonusTexture, sf::Vector2f(x, y), 5.f);
+        break;
+    }
+
+    activeBonuses.push_back(std::move(bonus));
 }

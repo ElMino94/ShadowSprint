@@ -4,5 +4,5 @@
 InvincibilityBonus::InvincibilityBonus(const sf::Texture& texture, const sf::Vector2f& position, float duration) : Bonus(texture, position, duration) {}
 
 void InvincibilityBonus::apply(Player& player) {
-    //player.setInvincible(true);
+    player.activateInvincibility(duration);
 }

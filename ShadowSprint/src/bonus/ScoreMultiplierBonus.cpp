@@ -4,5 +4,5 @@
 ScoreMultiplierBonus::ScoreMultiplierBonus(const sf::Texture& texture, const sf::Vector2f& position, float duration) : Bonus(texture, position, duration) {}
 
 void ScoreMultiplierBonus::apply(Player& player) {
-    //player.setScoreMultiplier(2);
+    player.activateScoreMultiplier(2.f, duration);
 }

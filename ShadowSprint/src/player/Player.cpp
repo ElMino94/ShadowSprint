@@ -153,6 +153,52 @@ void Player::reset() {
     blocking = false;
 }
 
+void Player::activateInvincibility(float duration) {
+    invincibilityEffect = { true, duration, 0.f };
+    invincible = true;
+}
+
+void Player::activateSlowMode(float duration) {
+    slowModeEffect = { true, duration, 0.f };
+    slowMode = true;
+}
+
+void Player::activateScoreMultiplier(float multiplier, float duration) {
+    activeMultipliers.push_back({ duration, 0.f });
+}
+
+float Player::getScoreMultiplier() const { return std::pow(2.f, static_cast<float>(activeMultipliers.size())); }
+bool Player::isInvincible() const { return invincible; }
+bool Player::isSlowMode() const { return slowMode; }
+
+void Player::updateBonusTimer(float dt) {
+    if (invincibilityEffect.active) {
+        invincibilityEffect.timer += dt;
+        if (invincibilityEffect.timer >= invincibilityEffect.duration) {
+            invincibilityEffect.active = false;
+            invincible = false;
+        }
+    }
+
+    if (slowModeEffect.active) {
+        slowModeEffect.timer += dt;
+        if (slowModeEffect.timer >= slowModeEffect.duration) {
+            slowModeEffect.active = false;
+            slowMode = false;
+        }
+    }
+
+    for (auto& m : activeMultipliers)
+        m.timer += dt;
+
+    activeMultipliers.erase(
+        std::remove_if(activeMultipliers.begin(), activeMultipliers.end(),
+            [](const MultiplierInstance& m) { return m.timer >= m.duration; }),
+        activeMultipliers.end()
+    );
+}
+
+
 FloatRect Player::getBounds() const { return sprite->getGlobalBounds(); }
 void Player::move(const Vector2f& offset) { sprite->move(offset); }
 void Player::setPosition(const Vector2f& pos) { sprite->setPosition(pos); }
