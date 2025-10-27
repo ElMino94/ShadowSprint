@@ -1,14 +1,15 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <memory>
 #include <vector>
+#include "../map/Map.h"
 #include "../player/Player.h"
 #include "../ui/MainMenu.h"
 #include "../ui/OptionMenu.h"
-#include "../ui/InGameUI.h"
 #include "../ui/PauseMenu.h"
+#include "../ui/InGameUI.h"
 #include "../enemies/Shuriken.h"
-#include "../map/Map.h"
 #include "../ui/Utils.h"
 
 class Game {
@@ -16,39 +17,37 @@ public:
     Game();
     void run();
 
-    enum GameState { PLAYING, MAINMENU, OPTIONSMENU, PAUSEMENU };
-    GameState currentState;
-
 private:
+    void processEvents();
+    void update(float dt);
+    void render();
+    void applyDisplaySettings(bool fullscreen, bool vsync);
+    void resetGame();
+
     sf::RenderWindow window;
     sf::Clock clock;
+
+    enum State { MAINMENU, OPTIONSMENU, PAUSEMENU, PLAYING } currentState;
 
     MainMenu mainMenu;
     OptionMenu optionMenu;
     PauseMenu pauseMenu;
     InGameUI igUI;
 
+    std::unique_ptr<Map> map;
     Player player;
-    std::unique_ptr<Map> map; 
-
-    std::vector<std::unique_ptr<Shuriken>> shurikens;
 
     sf::Font font;
     sf::Text countdownText;
     sf::Text gameOverText;
 
-    sf::Clock shurikenClock;
-
-    bool gameStarted;
-    bool gameOver;
-    float countdown;
-    float playerSpeed;
+    bool gameStarted = false;
+    bool gameOver = false;
+    float countdown = 3.f;
     float score = 0.f;
+    float playerSpeed = 1.f;
 
-    void processEvents();
-    void update(float dt);
-    void render();
-    void resetGame();
-
-    void applyDisplaySettings(bool fullscreen, bool vsync);
+    // --- Gestion des Shurikens ---
+    std::vector<std::unique_ptr<Shuriken>> shurikens;
+    float shurikenSpawnTimer = 0.f;
 };

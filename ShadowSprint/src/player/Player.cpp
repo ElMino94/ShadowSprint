@@ -103,23 +103,52 @@ void Player::setState(State newState)
     }
 }
 
-void Player::move(const sf::Vector2f& offset) { idleTestSprite.move(offset); }
-void Player::setPosition(const sf::Vector2f& pos) { idleTestSprite.setPosition(pos); }
-sf::Vector2f Player::getPosition() const { return idleTestSprite.getPosition(); }
-sf::FloatRect Player::getBounds() const { return idleTestSprite.getGlobalBounds(); }
+void Player::move(const sf::Vector2f& offset) { 
+    idleTestSprite.move(offset); 
+}
+
+void Player::setPosition(const sf::Vector2f& pos) { 
+    idleTestSprite.setPosition(pos); 
+}
+
+sf::Vector2f Player::getPosition() const { 
+    return idleTestSprite.getPosition(); 
+}
+
+sf::FloatRect Player::getBounds() const {
+    sf::Vector2f pos = idleTestSprite.getPosition();
+    const sf::Vector2f hitboxSize = { 60.f, 100.f };
+
+    sf::Vector2f topLeft(pos.x - hitboxSize.x / 2.f, pos.y - hitboxSize.y / 2.f);
+    return sf::FloatRect(topLeft, hitboxSize);
+}
 
 void Player::reset()
 {
     setState(State::Idle);
-    idleTestSprite.setPosition({ 300.f, 900.f });
+    idleTestSprite.setPosition({ 300.f, 0.f });
     velocityY = 0.f;
-    onGround = true;
+    onGround = false;
     canDoubleJump = false;
     blocking = false;
 }
 
-bool Player::isBlocking() const { return blocking; }
-bool Player::isOnGround() const { return onGround; }
-void Player::setOnGround(bool v) { onGround = v; }
-float Player::getVelocityY() const { return velocityY; }
-void Player::setVelocityY(float v) { velocityY = v; }
+bool Player::isBlocking() const { 
+    return blocking;
+}
+
+bool Player::isOnGround() const { 
+    return onGround; 
+}
+
+void Player::setOnGround(bool v) { 
+    onGround = v; 
+}
+
+float Player::getVelocityY() const { 
+    return velocityY;
+}
+
+void Player::setVelocityY(float v) { 
+    velocityY = v;
+}

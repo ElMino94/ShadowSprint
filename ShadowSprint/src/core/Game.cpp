@@ -1,9 +1,9 @@
 #include "../../include/core/Game.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 using namespace sf;
-using namespace Utils;
 
 Game::Game()
     : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Default),
@@ -16,7 +16,8 @@ Game::Game()
     gameStarted(false),
     gameOver(false),
     countdown(3.f),
-    playerSpeed(1.f)
+    playerSpeed(1.f),
+    shurikenSpawnTimer(0.f)
 {
     window.setFramerateLimit(60);
 
@@ -55,7 +56,7 @@ void Game::processEvents() {
             }
         }
 
-        // Menus
+        // --- Menus ---
         if (currentState == MAINMENU) {
             MainMenu::MainMenuAction action = mainMenu.handleEvent(*event);
             switch (action) {
@@ -71,8 +72,7 @@ void Game::processEvents() {
             case MainMenu::MainMenuAction::Quit:
                 window.close();
                 break;
-            default:
-                break;
+            default: break;
             }
         }
 
@@ -114,8 +114,7 @@ void Game::processEvents() {
                 currentState = MAINMENU;
                 mainMenu.activate();
                 break;
-            default:
-                break;
+            default: break;
             }
         }
     }
@@ -147,19 +146,59 @@ void Game::update(float dt) {
                 gameStarted = true;
                 player.setState(Player::State::Running);
                 shurikens.clear();
+                shurikenSpawnTimer = 0.f;
             }
         }
         else if (!gameOver) {
             player.handleInput();
             player.update(dt);
 
-            sf::FloatRect bounds = player.getBounds();
+            sf::FloatRect bounds = player.getBounds();  
             sf::Vector2f vel(0.f, player.getVelocityY());
             bool grounded = map->resolvePlayerCollisions(bounds, vel);
-            if (grounded) player.setOnGround(true);
-            else player.setOnGround(false);
 
-            player.setVelocityY(vel.y);
+            sf::Vector2f newCenter(
+                bounds.position.x + bounds.size.x * 0.5f,
+                bounds.position.y + bounds.size.y * 0.5f
+            );
+
+            if (grounded) {
+                player.setVelocityY(0.f);
+                player.setOnGround(true);
+            }
+            else {
+                player.setOnGround(false);
+            }
+
+            if (player.getPosition().y > window.getSize().y + 200.f) {
+                gameOver = true;
+                std::cout << " Player fell off the map!" << std::endl;
+            }
+            player.setPosition(newCenter);
+
+            shurikenSpawnTimer += dt;
+            if (shurikenSpawnTimer > 2.f) {
+                shurikens.emplace_back(std::make_unique<Shuriken>(player.getPosition()));
+                shurikenSpawnTimer = 0.f;
+            }
+
+            for (auto& s : shurikens)
+                s->update(dt);
+
+            for (auto& s : shurikens) {
+                const sf::FloatRect a = s->getBounds();      
+                const sf::FloatRect b = player.getBounds();  
+                if (Utils::intersectsAABB(a, b)) {
+                    gameOver = true;
+                    std::cout << " Player hit by a shuriken!\n";
+                    break;
+                }
+            }
+
+            shurikens.erase(
+                std::remove_if(shurikens.begin(), shurikens.end(),
+                    [](const std::unique_ptr<Shuriken>& s) { return s->isOffScreen(); }),
+                shurikens.end());
 
             int hit = map->tryConsumePickup(player.getBounds());
             if (hit > 0) score += 100.f;
@@ -191,6 +230,8 @@ void Game::render() {
     case PLAYING:
         if (map) map->draw(window);
         player.draw(window);
+        for (auto& s : shurikens)
+            s->draw(window);
         if (!gameStarted && countdown > 0.f)
             window.draw(countdownText);
         if (gameOver)
@@ -223,5 +264,6 @@ void Game::resetGame() {
     score = 0.f;
     player.reset();
     shurikens.clear();
+    shurikenSpawnTimer = 0.f;
     map = std::make_unique<Map>(window.getSize());
 }
