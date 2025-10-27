@@ -24,6 +24,10 @@ public:
     bool isBlocking() const;
     bool isOnGround() const;
 
+    // === Fonctions d'acc�s pour Game / Map ===
+    void setOnGround(bool v);
+    float getVelocityY() const;
+    void setVelocityY(float v);
 
     void updateBonusTimer(float dt);
 

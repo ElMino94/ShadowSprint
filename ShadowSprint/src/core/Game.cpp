@@ -1,9 +1,9 @@
 #include "../../include/core/Game.h"
-#include <iostream>
 #include <cmath>
+#include <iostream>
+#include <algorithm>
 
 using namespace sf;
-using namespace Utils;
 
 Game::Game()
     : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Default),
@@ -15,7 +15,9 @@ Game::Game()
     gameOverText(font, "GAME OVER", 150),
     gameStarted(false),
     gameOver(false),
-    countdown(3.f), playerSpeed(1.f)
+    countdown(3.f),
+    playerSpeed(1.f),
+    shurikenSpawnTimer(0.f)
 {
     window.setFramerateLimit(60);
 
@@ -25,6 +27,8 @@ Game::Game()
     gameOverText.setFillColor(Color::Red);
     gameOverText.setPosition(Vector2f(600.f, 400.f));
 
+    map = std::make_unique<Map>(window.getSize());
+    
     if (!slowBonusTexture.loadFromFile("../assets/textures/bonus_slowmode.png"))
         std::cerr << "Erreur chargement bonus_slowmode.png\n";
     if (!invincibilityBonusTexture.loadFromFile("../assets/textures/bonus_invincibility.png"))
@@ -34,7 +38,6 @@ Game::Game()
 }
 
 void Game::run() {
-    Clock clock;
     while (window.isOpen()) {
         processEvents();
         float dt = clock.restart().asSeconds();
@@ -49,7 +52,7 @@ void Game::processEvents() {
             window.close();
 
         if (const auto* keyEvent = event->getIf<Event::KeyPressed>()) {
-            if (keyEvent->scancode == Keyboard::Scancode::Escape)
+            if (keyEvent->scancode == Keyboard::Scancode::Escape) {
                 if (currentState == PLAYING) {
                     currentState = PAUSEMENU;
                     pauseMenu.activate();
@@ -57,12 +60,12 @@ void Game::processEvents() {
                 else if (currentState == PAUSEMENU) {
                     currentState = PLAYING;
                 }
+            }
         }
 
-        // MAIN MENU
+        // --- Menus ---
         if (currentState == MAINMENU) {
             MainMenu::MainMenuAction action = mainMenu.handleEvent(*event);
-
             switch (action) {
             case MainMenu::MainMenuAction::Play:
                 currentState = PLAYING;
@@ -76,19 +79,15 @@ void Game::processEvents() {
             case MainMenu::MainMenuAction::Quit:
                 window.close();
                 break;
-            default:
-                break;
+            default: break;
             }
         }
 
-        // OPTIONS MENU
         if (currentState == OPTIONSMENU) {
             OptionMenu::OptionAction action = optionMenu.handleEvent(*event);
-
             if (action == OptionMenu::OptionAction::Back) {
                 bool fullscreen = optionMenu.isFullscreenEnabled();
                 bool vsync = optionMenu.isVsyncEnabled();
-
                 applyDisplaySettings(fullscreen, vsync);
 
                 if (optionMenu.getReturnContext() == OptionMenu::ReturnContext::MainMenu) {
@@ -102,10 +101,8 @@ void Game::processEvents() {
             }
         }
 
-        // PAUSE MENU
         if (currentState == PAUSEMENU) {
             PauseMenu::Action action = pauseMenu.handleEvent(*event);
-
             switch (action) {
             case PauseMenu::Action::Resume:
                 currentState = PLAYING;
@@ -124,9 +121,7 @@ void Game::processEvents() {
                 currentState = MAINMENU;
                 mainMenu.activate();
                 break;
-            case PauseMenu::Action::None:
-            default:
-                break;
+            default: break;
             }
         }
     }
@@ -134,20 +129,19 @@ void Game::processEvents() {
 
 void Game::update(float dt) {
     switch (currentState) {
+    case MAINMENU:
+        mainMenu.update(dt);
+        break;
+    case OPTIONSMENU:
+        optionMenu.update(dt);
+        break;
+    case PAUSEMENU:
+        pauseMenu.update(dt);
+        break;
+    case PLAYING: {
+        float mapSpeed = map ? map->update(dt) : 0.f;
 
-        case MAINMENU:
-            mainMenu.update(dt);
-            break;
 
-        case OPTIONSMENU:
-            optionMenu.update(dt);
-            break;
-
-        case PAUSEMENU:
-            pauseMenu.update(dt);
-            break;
-
-        case PLAYING: {
             if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
                 bonusSpawnClock.restart();
                 spawnRandomBonus();
@@ -236,8 +230,64 @@ void Game::update(float dt) {
             player.update(dt);
             player.updateBonusTimer(dt);
 
-            break;
+            sf::FloatRect bounds = player.getBounds();  
+            sf::Vector2f vel(0.f, player.getVelocityY());
+            bool grounded = map->resolvePlayerCollisions(bounds, vel);
+
+            sf::Vector2f newCenter(
+                bounds.position.x + bounds.size.x * 0.5f,
+                bounds.position.y + bounds.size.y * 0.5f
+            );
+
+            if (grounded) {
+                player.setVelocityY(0.f);
+                player.setOnGround(true);
+            }
+            else {
+                player.setOnGround(false);
+            }
+
+            if (player.getPosition().y > window.getSize().y + 200.f) {
+                gameOver = true;
+                std::cout << " Player fell off the map!" << std::endl;
+            }
+            player.setPosition(newCenter);
+
+            shurikenSpawnTimer += dt;
+            if (shurikenSpawnTimer > 2.f) {
+                shurikens.emplace_back(std::make_unique<Shuriken>(player.getPosition()));
+                shurikenSpawnTimer = 0.f;
+            }
+
+            for (auto& s : shurikens)
+                s->update(dt);
+
+            for (auto& s : shurikens) {
+                const sf::FloatRect a = s->getBounds();      
+                const sf::FloatRect b = player.getBounds();  
+                if (Utils::intersectsAABB(a, b)) {
+                    gameOver = true;
+                    std::cout << " Player hit by a shuriken!\n";
+                    break;
+                }
+            }
+
+            shurikens.erase(
+                std::remove_if(shurikens.begin(), shurikens.end(),
+                    [](const std::unique_ptr<Shuriken>& s) { return s->isOffScreen(); }),
+                shurikens.end());
+
+            int hit = map->tryConsumePickup(player.getBounds());
+            if (hit > 0) score += 100.f;
+            else if (hit < 0) score = std::max(0.f, score - 50.f);
+
+            playerSpeed = std::max(1.f, mapSpeed / 200.f);
+            score += 2.f * playerSpeed * dt;
         }
+
+        igUI.update(dt, score);
+        break;
+    }
     }
 }
 
@@ -259,6 +309,7 @@ void Game::render() {
             break;
 
         case PLAYING: {
+            if (map) map->draw(window);
             player.draw(window);
 
             for (auto& s : shurikens)
@@ -292,6 +343,7 @@ void Game::render() {
             break;
         }
     }
+
     window.display();
 }
 
@@ -316,6 +368,8 @@ void Game::resetGame() {
     score = 0.f;
     player.reset();
     shurikens.clear();
+    shurikenSpawnTimer = 0.f;
+    map = std::make_unique<Map>(window.getSize());
     activeBonuses.clear();
 }
 

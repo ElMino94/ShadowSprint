@@ -40,7 +40,8 @@ Player::Player(float scale)
     sprite->setPosition(Vector2f(300.f, 900.f));
 }
 
-void Player::handleInput() {
+void Player::handleInput()
+{
     blocking = false;
 
     if (Keyboard::isKeyPressed(Keyboard::Scancode::Space)) {
@@ -63,11 +64,14 @@ void Player::handleInput() {
     }
 }
 
-void Player::jump() {
+void Player::jump()
+{
     velocityY = -jumpForce;
 }
 
-void Player::update(float dt) {
+void Player::update(float dt)
+{
+    // Gravity
     velocityY += gravity * dt;
     sprite->move(Vector2f(0.f, velocityY * dt));
 
@@ -112,7 +116,8 @@ int Player::getFrameCountForState(State state) const {
     }
 }
 
-void Player::setState(State newState) {
+void Player::setState(State newState)
+{
     if (currentState != newState) {
         Vector2f oldPos = sprite->getPosition();
         float oldBottom = oldPos.y + sprite->getGlobalBounds().size.y;
@@ -148,7 +153,7 @@ void Player::reset() {
     setState(State::Idle);
     sprite->setPosition(Vector2f(300.f, 900.f));
     velocityY = 0.f;
-    onGround = true;
+    onGround = false;
     canDoubleJump = false;
     blocking = false;
 }
