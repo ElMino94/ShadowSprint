@@ -129,33 +129,6 @@ bool OptionMenu::isVsyncEnabled() const {
     return vsync;
 }
 
-void OptionMenu::setFullscreen(bool enabled) {
-    unsigned int titleSize = enabled ? 200 : 120;
-    unsigned int itemSize = enabled ? 80 : 50;
-    unsigned int backSize = enabled ? 100 : 70;
-
-    styleText(titleText, titleSize);
-    styleText(musicVolumeText, itemSize);
-    styleText(sfxVolumeText, itemSize);
-    styleText(fullscreenText, itemSize);
-    styleText(vsyncText, itemSize);
-    styleText(backText, backSize);
-
-    styleText(musicLeftArrow, itemSize);
-    styleText(musicRightArrow, itemSize);
-    styleText(sfxLeftArrow, itemSize);
-    styleText(sfxRightArrow, itemSize);
-
-    positionText(titleText, window, 0.10f);
-    positionText(musicVolumeText, window, 0.30f);
-    positionText(sfxVolumeText, window, 0.40f);
-    positionText(fullscreenText, window, 0.55f);
-    positionText(vsyncText, window, 0.65f);
-    positionText(backText, window, 0.80f);
-
-    updateVolumeText(enabled);
-}
-
 void OptionMenu::updateVolumeText(bool fullscreen) {
     Vector2u windowSize = window.getSize();
     float musicY = windowSize.y * 0.30f;
@@ -169,14 +142,11 @@ void OptionMenu::updateVolumeText(bool fullscreen) {
     centerText(musicVolumeText);
     musicVolumeText.setPosition({ windowSize.x / 2.f, musicY });
 
-    float musicLeftOffset = fullscreen ? 80.f : 50.f;
-    float musicRightOffset = fullscreen ? 350.f : 200.f;
-
     centerText(musicLeftArrow);
-    musicLeftArrow.setPosition({ musicVolumeText.getPosition().x + musicLeftOffset, musicY });
+    musicLeftArrow.setPosition({ musicVolumeText.getPosition().x + 80.f, musicY });
 
     centerText(musicRightArrow);
-    musicRightArrow.setPosition({ musicVolumeText.getPosition().x + musicRightOffset, musicY });
+    musicRightArrow.setPosition({ musicVolumeText.getPosition().x + 350.f, musicY });
 
     std::ostringstream sfxStream;
     sfxStream << std::setw(3) << std::setfill(' ') << static_cast<int>(sfxVolume);
@@ -186,14 +156,11 @@ void OptionMenu::updateVolumeText(bool fullscreen) {
     centerText(sfxVolumeText);
     sfxVolumeText.setPosition({ windowSize.x / 2.f, sfxY });
 
-    float sfxLeftOffset = fullscreen ? 80.f : 50.f;
-    float sfxRightOffset = fullscreen ? 350.f : 200.f;
-
     centerText(sfxLeftArrow);
-    sfxLeftArrow.setPosition({ sfxVolumeText.getPosition().x + sfxLeftOffset, sfxY });
+    sfxLeftArrow.setPosition({ sfxVolumeText.getPosition().x + 80.f, sfxY });
 
     centerText(sfxRightArrow);
-    sfxRightArrow.setPosition({ sfxVolumeText.getPosition().x + sfxRightOffset, sfxY });
+    sfxRightArrow.setPosition({ sfxVolumeText.getPosition().x + 350.f, sfxY });
 }
 
 void OptionMenu::setReturnContext(ReturnContext context) {

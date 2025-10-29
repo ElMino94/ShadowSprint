@@ -5,10 +5,11 @@
 using namespace sf;
 
 Player::Player(float scale) : onGround(true), canDoubleJump(false), blocking(false),
-    gravity(2500.f), jumpForce(1000.f), velocityY(0.f),
+    gravity(2500.f), jumpForce(1500.f), velocityY(0.f),
     currentState(State::Idle),
     playerScale(scale),
-    idleTexture(), runTexture(), jumpTexture(), fallTexture(), blockTexture()
+    idleTexture(), runTexture(), jumpTexture(), fallTexture(), blockTexture(),
+    blockCooldown(0.f), blockCooldownDuration(5.f)
 {
     if (!idleTexture.loadFromFile("../assets/textures/Martial Hero/Sprites/Idle.png"))
         std::cerr << "Erreur chargement Idle.png\n";
@@ -57,9 +58,10 @@ void Player::handleInput()
         }
     }
 
-    if (Keyboard::isKeyPressed(Keyboard::Scancode::LShift)) {
+    if (Keyboard::isKeyPressed(Keyboard::Scancode::LShift) && onGround && blockCooldown <= 0.f) {
         blocking = true;
         setState(State::Blocking);
+        blockCooldown = blockCooldownDuration;
     }
 }
 
@@ -70,6 +72,9 @@ void Player::jump()
 
 void Player::update(float dt) {
     velocityY += gravity * dt;
+
+    if (blockCooldown > 0.f)
+        blockCooldown -= dt;
 
     if (velocityY > 0.f && !onGround && currentState == State::Jumping) {
         setState(State::Falling);
@@ -90,6 +95,15 @@ void Player::update(float dt) {
     case State::Falling:  fallAnim.update(*sprite, dt); break;
     case State::Blocking: blockAnim.update(*sprite, dt); break;
     }
+}
+                     
+void Player::updateSpeed(float dt, float score) {
+    float speedFactor = std::max(0.01f, 0.15f - score * 0.0003f);
+
+    idleAnim.setFrameTime(speedFactor);
+    runAnim.setFrameTime(speedFactor);
+    jumpAnim.setFrameTime(speedFactor);
+    fallAnim.setFrameTime(speedFactor);
 }
 
 void Player::draw(RenderWindow& window) {
@@ -146,6 +160,7 @@ void Player::reset() {
     onGround = false;
     canDoubleJump = false;
     blocking = false;
+    blockCooldown = 0.f;
 }
 
 void Player::activateInvincibility(float duration) {
@@ -219,3 +234,6 @@ bool Player::isOnGround() const { return onGround; }
 void Player::setOnGround(bool v) { onGround = v; }
 float Player::getVelocityY() const { return velocityY; }
 void Player::setVelocityY(float v) { velocityY = v; }
+
+float Player::getBlockCooldown() const { return blockCooldown; }
+float Player::getBlockCooldownDuration() const { return blockCooldownDuration; }

@@ -12,12 +12,15 @@ public:
     void update(float dt, float distanceMeters);
     void draw(sf::RenderWindow& window) const;
 
-    void setFullscreen(bool enabled);
-
     void addBonusIcon(const sf::Texture& texture, float duration);
     void updateBonusIcons(float dt);
 
+    void setBlockCooldown(float current, float max);
+
 private:
+    float blockCooldown = 0.f;
+    float blockCooldownMax = 1.f;
+    
     sf::RenderWindow& window;
     sf::Font font;
 
@@ -25,6 +28,9 @@ private:
 
     sf::Texture scoreBackgroundTexture;
     sf::Sprite scoreBackgroundSprite;
+
+    sf::RectangleShape blockCooldownBar;
+    sf::RectangleShape background;
 
     unsigned int baseSize = 40;
 

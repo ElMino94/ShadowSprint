@@ -58,7 +58,7 @@ private:
 
     sf::Clock bonusSpawnClock;
 
-    float bonusSpawnInterval = 2.f;
+    float bonusSpawnInterval = 15.f;
 
     void spawnRandomBonus();
 

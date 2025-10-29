@@ -17,7 +17,6 @@ public:
     void draw(sf::RenderWindow& window) const;
     Action handleEvent(const sf::Event& event);
 
-    void setFullscreen(bool enabled);
     void activate();
 
 private:

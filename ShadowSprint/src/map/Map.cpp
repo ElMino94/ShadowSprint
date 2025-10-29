@@ -93,7 +93,7 @@ float Map::update(float dt) {
     totalMeters += speed * metersPerPixel * dt;
 
     // Augmente la vitesse au fil du temps
-    if (totalMeters - lastSpeedStepMeters > 500.f) {
+    if (totalMeters - lastSpeedStepMeters > 50.f) {
         lastSpeedStepMeters = totalMeters;
         speed += 10.f;
     }

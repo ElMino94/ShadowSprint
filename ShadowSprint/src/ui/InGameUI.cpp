@@ -25,6 +25,15 @@ void InGameUI::update(float dt, float distanceMeters) {
     positionTextTopRight(distanceText, window, 60.f, 150.f);
     scoreBackgroundSprite.setPosition(distanceText.getPosition());
     updateBonusIcons(dt);
+
+    float ratio = std::clamp(1.f - (blockCooldown / blockCooldownMax), 0.f, 1.f);
+    blockCooldownBar.setSize(sf::Vector2f(200.f * ratio, 20.f));
+    blockCooldownBar.setFillColor(sf::Color::Blue);
+    blockCooldownBar.setPosition({ 50.f, 50.f });
+
+    background.setSize(sf::Vector2f(200.f, 20.f));
+    background.setFillColor(sf::Color(50, 50, 50, 150));
+    background.setPosition({ 50.f, 50.f });
 }
 
 void InGameUI::draw(sf::RenderWindow& window) const {
@@ -32,17 +41,8 @@ void InGameUI::draw(sf::RenderWindow& window) const {
     window.draw(distanceText);
     for (const auto& icon : activeBonusIcons)
         window.draw(icon.sprite);
-}
-
-void InGameUI::setFullscreen(bool enabled) {
-    float scale = enabled ? 0.5f : 0.3f;
-    scoreBackgroundSprite.setScale({ scale, scale });
-    scoreBackgroundSprite.setPosition(distanceText.getPosition());
-
-    baseSize = enabled ? 40 : 24;
-
-    styleText(distanceText, baseSize);
-    positionTextTopRight(distanceText, window, 60.f, 150.f);
+    window.draw(background);
+    window.draw(blockCooldownBar);
 }
 
 void InGameUI::addBonusIcon(const sf::Texture& texture, float duration) {
@@ -66,4 +66,9 @@ void InGameUI::updateBonusIcons(float dt) {
     for (size_t i = 0; i < activeBonusIcons.size(); ++i) {
         activeBonusIcons[i].sprite.setPosition({ startX, startY + i *100.f });
     }
+}
+
+void InGameUI::setBlockCooldown(float current, float max) {
+    blockCooldown = current;
+    blockCooldownMax = max;
 }

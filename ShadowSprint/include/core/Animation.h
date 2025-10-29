@@ -11,6 +11,7 @@ public:
     void update(Sprite& sprite, float deltaTime);
     void reset();
     bool isFinished() const;
+    void setFrameTime(float newTime) { frameTime = newTime; }
 
 private:
     Texture* texture;

@@ -24,7 +24,6 @@ public:
     void draw(sf::RenderWindow& window) const;
 
     void activate();
-    void setFullscreen(bool enabled);
 
     bool isFullscreenEnabled() const;
     bool isVsyncEnabled() const;

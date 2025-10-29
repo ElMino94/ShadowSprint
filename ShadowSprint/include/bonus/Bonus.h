@@ -10,7 +10,7 @@ public:
 
     virtual void apply(Player& player) = 0;
 
-    void update(float dt);
+    void update(float dt, float mapSpeed);
     void draw(sf::RenderWindow& window);
     bool isExpired() const;
     bool isOffScreen() const;

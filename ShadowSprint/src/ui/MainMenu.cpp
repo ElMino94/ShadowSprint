@@ -60,18 +60,3 @@ void MainMenu::activate() {
     activationClock.restart();
     firstActivation = true;
 }
-
-void MainMenu::setFullscreen(bool enabled) {
-    unsigned int titleSize = enabled ? 250 : 150;
-    unsigned int itemSize = enabled ? 100 : 60;
-
-    styleText(titleText, titleSize);
-    styleText(playText, itemSize);
-    styleText(optionText, itemSize);
-    styleText(quitText, itemSize);
-
-    positionText(titleText, window, 0.15f);
-    positionText(playText, window, 0.4f);
-    positionText(optionText, window, 0.55f);
-    positionText(quitText, window, 0.7f);
-}

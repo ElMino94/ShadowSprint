@@ -64,23 +64,6 @@ void PauseMenu::draw(RenderWindow& window) const {
     window.draw(backText);
 }
 
-void PauseMenu::setFullscreen(bool enabled) {
-    unsigned int titleSize = enabled ? 120 : 80;
-    unsigned int itemSize = enabled ? 70 : 45;
-
-    styleText(titleText, titleSize);
-    styleText(resumeText, itemSize);
-    styleText(optionsText, itemSize);
-    styleText(restartText, itemSize);
-    styleText(backText, itemSize);
-
-    positionText(titleText, window, 0.20f);
-    positionText(resumeText, window, 0.40f);
-    positionText(optionsText, window, 0.50f);
-    positionText(restartText, window, 0.60f);
-    positionText(backText, window, 0.70f);
-}
-
 void PauseMenu::activate() {
     activationClock.restart();
     firstActivation = true;

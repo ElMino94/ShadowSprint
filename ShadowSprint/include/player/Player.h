@@ -10,6 +10,7 @@ public:
 
     void handleInput();
     void update(float dt) override;
+    void updateSpeed(float dt, float score);
     void draw(sf::RenderWindow& window) override;
 
     void move(const sf::Vector2f& offset) override;
@@ -37,6 +38,9 @@ public:
     bool isInvincible() const;
     bool isSlowMode() const;
 
+    float getBlockCooldown() const;
+    float getBlockCooldownDuration() const;
+
 private:
     Animation idleAnim;
     Animation runAnim;
@@ -59,6 +63,8 @@ private:
     float  jumpForce;
     float  velocityY;
     float  playerScale;
+    float blockCooldown;
+    const float blockCooldownDuration;
 
     void jump();
 

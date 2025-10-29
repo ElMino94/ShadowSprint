@@ -151,7 +151,7 @@ void Game::update(float dt) {
             }
 
             for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
-                (*it)->update(dt);
+                (*it)->update(dt, mapSpeed);
 
                 if (intersectsAABB(player.getBounds(), (*it)->getBounds())) {
                     (*it)->apply(player);
@@ -232,6 +232,7 @@ void Game::update(float dt) {
             }
 
             player.update(dt);
+            player.updateSpeed(dt, score);
             player.updateBonusTimer(dt);
 
             sf::Vector2f vel(0.f, player.getVelocityY());
@@ -275,9 +276,9 @@ void Game::update(float dt) {
             else if (hit < 0) score = std::max(0.f, score - 50.f);
 
             playerSpeed = std::max(1.f, mapSpeed / 200.f);
-            score += 2.f * playerSpeed * dt;
         }
 
+        igUI.setBlockCooldown(player.getBlockCooldown(), player.getBlockCooldownDuration());
         igUI.update(dt, score);
         break;            
     }
@@ -341,17 +342,12 @@ void Game::render() {
 }
 
 void Game::applyDisplaySettings(bool fullscreen, bool vsync) {
-    VideoMode mode = fullscreen ? VideoMode::getDesktopMode() : VideoMode({ 1280u, 720u });
+    VideoMode mode = fullscreen ? VideoMode::getDesktopMode() : VideoMode({ 1920, 1080u });
     unsigned int style = fullscreen ? Style::None : Style::Default;
 
     window.create(mode, "ShadowSprint", style);
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(vsync);
-
-    mainMenu.setFullscreen(fullscreen);
-    optionMenu.setFullscreen(fullscreen);
-    pauseMenu.setFullscreen(fullscreen);
-    igUI.setFullscreen(fullscreen);
 }
 
 void Game::resetGame() {

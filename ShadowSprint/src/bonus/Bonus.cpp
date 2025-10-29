@@ -11,9 +11,13 @@ Bonus::Bonus(const sf::Texture& texture, const sf::Vector2f& position, float dur
     sprite->setScale(sf::Vector2f(0.4f, 0.4f));
 }
 
-void Bonus::update(float dt) {
+void Bonus::update(float dt, float mapSpeed) {
     timer += dt;
+
+    sprite->move(sf::Vector2f(-mapSpeed * 0.5f * dt, 0.f));
+
     sprite->move(velocity * dt);
+
     sprite->move(sf::Vector2f(0.f, std::sin(timer * 3.f) * 0.5f));
 }
 
