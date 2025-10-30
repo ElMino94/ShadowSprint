@@ -85,6 +85,10 @@ void Map::reset() {
         tile.setPosition({ i * tileSize.x, groundY });
         tiles.push_back(tile);
     }
+
+    // --- Réinitialisation des plateformes ---
+    platforms.clear();
+    platformSpawnTimer = 0.f;
 }
 
 float Map::update(float dt, float score) {
@@ -99,6 +103,36 @@ float Map::update(float dt, float score) {
     for (auto& layer : layers)
         layer.update(cameraX, screenSize);
 
+    // === Gestion des plateformes ===
+    platformSpawnTimer += dt;
+
+    // Nouvelle plateforme toutes les 2 à 5 secondes
+    if (platformSpawnTimer > 2.f + static_cast<float>(std::rand() % 3)) {
+        platformSpawnTimer = 0.f;
+
+        float x = static_cast<float>(screen.x) + 200.f; // spawn à droite
+        float y = static_cast<float>(std::rand() % 400 + 500); // hauteur aléatoire
+        int tileCount = std::rand() % 6 + 3; // 3 à 8 tuiles (largeur 120–320 px)
+
+        if (groundTexture) {
+            platforms.push_back(std::make_unique<Platform>(
+                sf::Vector2f(x, y),
+                tileCount,
+                *groundTexture,
+                tileSize
+            ));
+        }
+    }
+
+    // Mise à jour et nettoyage
+    for (auto it = platforms.begin(); it != platforms.end();) {
+        (*it)->update(dt, speed);
+        if ((*it)->isOffScreen())
+            it = platforms.erase(it);
+        else
+            ++it;
+    }
+
     return speed;
 }
 
@@ -108,10 +142,13 @@ void Map::draw(RenderWindow& window) {
 
     for (auto& tile : tiles)
         window.draw(tile);
+
+    for (auto& platform : platforms)
+        platform->draw(window);
 }
 
 int Map::tryConsumePickup(const FloatRect&) {
-    return 0; 
+    return 0;
 }
 
 ParallaxLayer Map::makeLayer(const std::string& file, float speedFactor, float y) {
@@ -122,4 +159,9 @@ ParallaxLayer Map::makeLayer(const std::string& file, float speedFactor, float y
 
 float Map::getGroundY() const {
     return groundY;
+}
+
+
+const std::vector <std::unique_ptr<class Platform>>& Map::getPlatforms() const {
+    return platforms;
 }

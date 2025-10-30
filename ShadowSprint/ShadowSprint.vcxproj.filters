@@ -1,107 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Fichiers sources">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Fichiers d%27en-tête">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Fichiers de ressources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="src\bonus\Bonus.cpp" />
+    <ClCompile Include="src\bonus\InvincibilityBonus.cpp" />
+    <ClCompile Include="src\bonus\ScoreMultiplierBonus.cpp" />
+    <ClCompile Include="src\bonus\SlowModeBonus.cpp" />
+    <ClCompile Include="src\core\Animation.cpp" />
+    <ClCompile Include="src\core\Entity.cpp" />
+    <ClCompile Include="src\core\Game.cpp" />
+    <ClCompile Include="src\enemies\Shuriken.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\map\Map.cpp" />
+    <ClCompile Include="src\player\Player.cpp" />
+    <ClCompile Include="src\ui\InGameUI.cpp" />
+    <ClCompile Include="src\ui\MainMenu.cpp" />
+    <ClCompile Include="src\ui\OptionMenu.cpp" />
+    <ClCompile Include="src\ui\PauseMenu.cpp" />
+    <ClCompile Include="src\map\Platform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\Game.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\enemies\Shuriken.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\player\Player.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\MainMenu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\OptionMenu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\InGameUI.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\PauseMenu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\Entity.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\Animation.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\map\Map.cpp">
-    <ClCompile Include="src\bonus\Bonus.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\bonus\SlowModeBonus.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\bonus\ScoreMultiplierBonus.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\bonus\InvincibilityBonus.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\core\Game.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\enemies\Shuriken.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\player\Player.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ui\MainMenu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ui\OptionMenu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ui\Utils.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ui\InGameUI.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ui\PauseMenu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\Entity.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\Animation.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\map\Map.h">
-    <ClInclude Include="include\bonus\Bonus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\bonus\SlowModeBonus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\bonus\InvincibilityBonus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\bonus\ScoreMultiplierBonus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
+    <ClInclude Include="include\bonus\Bonus.h" />
+    <ClInclude Include="include\bonus\InvincibilityBonus.h" />
+    <ClInclude Include="include\bonus\ScoreMultiplierBonus.h" />
+    <ClInclude Include="include\bonus\SlowModeBonus.h" />
+    <ClInclude Include="include\core\Animation.h" />
+    <ClInclude Include="include\core\Entity.h" />
+    <ClInclude Include="include\core\Game.h" />
+    <ClInclude Include="include\enemies\Shuriken.h" />
+    <ClInclude Include="include\map\Map.h" />
+    <ClInclude Include="include\player\Player.h" />
+    <ClInclude Include="include\ui\InGameUI.h" />
+    <ClInclude Include="include\ui\MainMenu.h" />
+    <ClInclude Include="include\ui\OptionMenu.h" />
+    <ClInclude Include="include\ui\PauseMenu.h" />
+    <ClInclude Include="include\ui\Utils.h" />
+    <ClInclude Include="include\map\Platform.h" />
   </ItemGroup>
 </Project>

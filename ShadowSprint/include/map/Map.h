@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "../../include/ui/Utils.h"
+#include "../../include/map/Platform.h"
 
 class ParallaxLayer {
 public:
@@ -23,26 +24,31 @@ public:
     float update(float dt, float score);
     void draw(sf::RenderWindow& window);
 
-    // (Pickups éventuels)
     int tryConsumePickup(const sf::FloatRect& playerBounds);
 
-    // Pour placer le joueur sur le sol
     float getGroundY() const;
+
+    const std::vector <std::unique_ptr<class Platform>>& getPlatforms() const;
 
 private:
     ParallaxLayer makeLayer(const std::string& file, float speedFactor, float y);
 
     sf::Vector2u screen;
-    std::vector<ParallaxLayer> layers;
-    std::vector<sf::RectangleShape> tiles;
-    std::unique_ptr<sf::Texture> groundTexture;
-    sf::Vector2f tileSize;
-
-    float groundY = 0.f;
     float cameraX = 0.f;
-    float baseSpeed = 0.f;
+    float baseSpeed = 220.f;
     float speed = 0.f;
     float lastSpeedStepMeters = 0.f;
+    float groundY = 0.f;
+    float metersPerPixel = 0.05f;
+
+    std::unique_ptr<sf::Texture> groundTexture;
+    std::vector<sf::RectangleShape> tiles;
+    sf::Vector2f tileSize;
+
+    std::vector<ParallaxLayer> layers;
+
+    std::vector<std::unique_ptr<class Platform>> platforms;
+    float platformSpawnTimer = 0.f;
+
     Utils::RNG rng;
-    const float metersPerPixel = 0.1f;
 };

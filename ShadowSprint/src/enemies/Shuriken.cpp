@@ -13,13 +13,14 @@ Shuriken::Shuriken(const sf::Vector2f& targetPos)
     shape.setOutlineThickness(2.f);
     shape.setOrigin(sf::Vector2f(radius, radius));
 
-    float startX = static_cast<float>(std::rand() % 1700 + 100);
-    float startY = -100.f;
+    float startX = 2100.f; 
+    float startY = static_cast<float>(std::rand() % 600 + 400); 
     shape.setPosition(sf::Vector2f(startX, startY));
 
-    sf::Vector2f dir = targetPos - shape.getPosition();
+    sf::Vector2f offset(0.f, static_cast<float>((std::rand() % 201) - 100)); 
+    sf::Vector2f dir = (targetPos + offset) - shape.getPosition();
     float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-    direction = (length > 0.f) ? dir / length : sf::Vector2f(0.f, 1.f);
+    direction = (length > 0.f) ? dir / length : sf::Vector2f(-1.f, 0.f);
 }
 
 void Shuriken::update(float dt) {
@@ -38,5 +39,5 @@ sf::FloatRect Shuriken::getBounds() const { return shape.getGlobalBounds(); }
 
 bool Shuriken::isOffScreen() const {
     sf::Vector2f pos = shape.getPosition();
-    return (pos.y > 1200.f || pos.x < -200.f || pos.x > 2100.f);
+    return (pos.x < -200.f || pos.y < -200.f || pos.y > 1300.f);
 }
