@@ -7,17 +7,17 @@ using namespace sf;
 using namespace Utils;
 
 Game::Game() : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Default),
-    currentState(MAINMENU),
-    mainMenu(window), optionMenu(window), pauseMenu(window), igUI(window),
-    player(3.f),
-    font("../assets/fonts/samurai-blast.ttf"),
-    countdownText(font, "3", 200),
-    gameOverText(font, "GAME OVER", 150),
-    gameStarted(false),
-    gameOver(false),
-    countdown(3.f),
-    playerSpeed(1.f),
-    shurikenSpawnTimer(0.f)
+currentState(MAINMENU),
+mainMenu(window), optionMenu(window), pauseMenu(window), igUI(window),
+player(3.f),
+font("../assets/fonts/samurai-blast.ttf"),
+countdownText(font, "3", 200),
+gameOverText(font, "GAME OVER", 150),
+gameStarted(false),
+gameOver(false),
+countdown(3.f),
+playerSpeed(1.f),
+shurikenSpawnTimer(0.f)
 {
     window.setFramerateLimit(60);
 
@@ -28,7 +28,7 @@ Game::Game() : window(VideoMode({ 1920u, 1080u }), "ShadowSprint", Style::Defaul
     gameOverText.setPosition(Vector2f(600.f, 400.f));
 
     map = std::make_unique<Map>(window.getSize());
-    
+
     if (!slowBonusTexture.loadFromFile("../assets/textures/bonus_slowmode.png"))
         std::cerr << "Erreur chargement bonus_slowmode.png\n";
     if (!invincibilityBonusTexture.loadFromFile("../assets/textures/bonus_invincibility.png"))
@@ -130,157 +130,165 @@ void Game::processEvents() {
 void Game::update(float dt) {
     switch (currentState) {
 
-        case MAINMENU:
-            mainMenu.update(dt);
-            break;
+    case MAINMENU:
+        mainMenu.update(dt);
+        break;
 
-        case OPTIONSMENU:
-            optionMenu.update(dt);
-            break;
+    case OPTIONSMENU:
+        optionMenu.update(dt);
+        break;
 
-        case PAUSEMENU:
-            pauseMenu.update(dt);
-            break;
+    case PAUSEMENU:
+        pauseMenu.update(dt);
+        break;
 
-        case PLAYING: {
-            float mapSpeed = map ? map->update(dt, score) : 0.f;
+    case PLAYING: {
+        float mapSpeed = map ? map->update(dt, score) : 0.f;
 
-            if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
-                bonusSpawnClock.restart();
-                spawnRandomBonus();
-            }
-
-            for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
-                (*it)->update(dt, mapSpeed);
-
-                if (intersectsAABB(player.getBounds(), (*it)->getBounds())) {
-                    (*it)->apply(player);
-
-                    if (dynamic_cast<InvincibilityBonus*>(it->get()))
-                        igUI.addBonusIcon(invincibilityBonusTexture, 5.f);
-                    else if (dynamic_cast<SlowModeBonus*>(it->get()))
-                        igUI.addBonusIcon(slowBonusTexture, 5.f);
-                    else if (dynamic_cast<ScoreMultiplierBonus*>(it->get()))
-                        igUI.addBonusIcon(scoreBonusTexture, 5.f);
-
-                    it = activeBonuses.erase(it);
-                }
-                else if ((*it)->isOffScreen()) {
-                    it = activeBonuses.erase(it);
-                }
-
-                else {
-                    ++it;
-                }
-            }
-
-            if (!gameStarted) {
-                countdown -= dt;
-                player.setState(Player::State::Idle);
-
-                if (countdown > 0.f) {
-                    countdownText.setString(std::to_string(static_cast<int>(std::ceil(countdown))));
-                }
-                else {
-                    countdown = 0.f;
-                    gameStarted = true;
-                    player.setState(Player::State::Running);
-
-                    shurikens.clear();
-                    auto bounds = player.getBounds();
-                    Vector2f target = bounds.position + (bounds.size * 0.5f);
-                    shurikens.push_back(std::make_unique<Shuriken>(target));
-                }
-            }
-
-            else if (!gameOver) {
-                if (shurikenClock.getElapsedTime().asSeconds() > 1.5f) {
-                    shurikenClock.restart();
-                    auto bounds = player.getBounds();
-                    Vector2f target = bounds.position + (bounds.size * 0.5f);
-                    shurikens.push_back(std::make_unique<Shuriken>(target));
-                }
-
-                for (auto it = shurikens.begin(); it != shurikens.end();) {
-                    float shurikenSpeedFactor = player.isSlowMode() ? 0.3f : 1.f;
-                    (*it)->update(dt * shurikenSpeedFactor);
-
-                    FloatRect playerBounds = player.getBounds();
-                    FloatRect shurikenBounds = (*it)->getBounds();
-
-                    if (intersectsAABB(playerBounds, shurikenBounds)) {
-                        if (player.isBlocking() || player.isInvincible()) {
-                            it = shurikens.erase(it);
-                            continue;
-                        }
-                        else {
-                            gameOver = true;
-                            break;
-                        }
-                    }
-
-                    if ((*it)->isOffScreen())
-                        it = shurikens.erase(it);
-                    else
-                        ++it;
-                }
-            }
-
-            if (!gameOver && gameStarted) {
-                player.handleInput();
-                score += 10.f * dt * player.getScoreMultiplier();
-            }
-
-            player.update(dt);
-            player.updateSpeed(dt, score);
-            player.updateBonusTimer(dt);
-
-            sf::Vector2f vel(0.f, player.getVelocityY());
-
-            constexpr float playerFootY = 1210.f;
-
-            bool grounded = player.getPosition().y >= playerFootY;
-
-            if (grounded && player.getVelocityY() >= 0.f) {
-                vel.y = 0.f;
-                player.setOnGround(true);
-            }
-
-            else {
-                player.setOnGround(false);
-            }
-
-            player.move(vel * dt);
-
-            if (player.getPosition().y > window.getSize().y + 200.f) {
-                gameOver = true;
-                std::cout << " Player fell off the map!" << std::endl;
-            }
-
-            shurikenSpawnTimer += dt;
-            if (shurikenSpawnTimer > 2.f) {
-                shurikens.emplace_back(std::make_unique<Shuriken>(player.getPosition()));
-                shurikenSpawnTimer = 0.f;
-            }
-
-            for (auto& s : shurikens)
-                s->update(dt);
-
-            shurikens.erase(
-                std::remove_if(shurikens.begin(), shurikens.end(),
-                    [](const std::unique_ptr<Shuriken>& s) { return s->isOffScreen(); }),
-                shurikens.end());
-
-            int hit = map->tryConsumePickup(player.getBounds());
-            if (hit > 0) score += 100.f;
-            else if (hit < 0) score = std::max(0.f, score - 50.f);
-
-            playerSpeed = std::max(1.f, mapSpeed / 200.f);
+        // === Gestion des bonus ===
+        if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
+            bonusSpawnClock.restart();
+            spawnRandomBonus();
         }
 
-        igUI.setBlockCooldown(player.getBlockCooldown(), player.getBlockCooldownDuration());
-        igUI.update(dt, score);
-        break;            
+        for (auto it = activeBonuses.begin(); it != activeBonuses.end();) {
+            (*it)->update(dt, mapSpeed);
+
+            if (intersectsAABB(player.getBounds(), (*it)->getBounds())) {
+                (*it)->apply(player);
+
+                if (dynamic_cast<InvincibilityBonus*>(it->get()))
+                    igUI.addBonusIcon(invincibilityBonusTexture, 5.f);
+                else if (dynamic_cast<SlowModeBonus*>(it->get()))
+                    igUI.addBonusIcon(slowBonusTexture, 5.f);
+                else if (dynamic_cast<ScoreMultiplierBonus*>(it->get()))
+                    igUI.addBonusIcon(scoreBonusTexture, 5.f);
+
+                it = activeBonuses.erase(it);
+            }
+            else if ((*it)->isOffScreen()) {
+                it = activeBonuses.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        // === Compte à rebours avant départ ===
+        if (!gameStarted) {
+            countdown -= dt;
+            player.setState(Player::State::Idle);
+
+            if (countdown > 0.f) {
+                countdownText.setString(std::to_string(static_cast<int>(std::ceil(countdown))));
+            }
+            else {
+                countdown = 0.f;
+                gameStarted = true;
+                player.setState(Player::State::Running);
+
+                shurikens.clear();
+                auto bounds = player.getBounds();
+                Vector2f target = bounds.position + (bounds.size * 0.5f);
+                shurikens.push_back(std::make_unique<Shuriken>(target));
+            }
+        }
+
+        // === Gestion des shurikens ===
+        else if (!gameOver) {
+            // Apparition selon le score (paliers de 100 pts)
+            float spawnDelay = 1.5f;
+            if (shurikenClock.getElapsedTime().asSeconds() > spawnDelay) {
+                shurikenClock.restart();
+
+                int baseCount = 1;
+                int extra = static_cast<int>(score / 100.f); // +1 shuriken tous les 100 pts
+                int shurikenCount = std::min(baseCount + extra, 10); // max 10
+
+                auto bounds = player.getBounds();
+                Vector2f target = bounds.position + (bounds.size * 0.5f);
+
+                for (int i = 0; i < shurikenCount; ++i) {
+                    float offsetY = static_cast<float>((std::rand() % 400) - 200);
+                    Vector2f targetOffset = target + Vector2f(0.f, offsetY);
+                    shurikens.push_back(std::make_unique<Shuriken>(targetOffset));
+                }
+            }
+
+            for (auto it = shurikens.begin(); it != shurikens.end();) {
+                float shurikenSpeedFactor = player.isSlowMode() ? 0.3f : 1.f;
+                (*it)->update(dt * shurikenSpeedFactor);
+
+                FloatRect playerBounds = player.getBounds();
+                FloatRect shurikenBounds = (*it)->getBounds();
+
+                if (intersectsAABB(playerBounds, shurikenBounds)) {
+                    if (player.isBlocking() || player.isInvincible()) {
+                        it = shurikens.erase(it);
+                        continue;
+                    }
+                    else {
+                        gameOver = true;
+                        break;
+                    }
+                }
+
+                if ((*it)->isOffScreen())
+                    it = shurikens.erase(it);
+                else
+                    ++it;
+            }
+        }
+
+        // === Score et joueur ===
+        if (!gameOver && gameStarted) {
+            player.handleInput();
+            score += 10.f * dt * player.getScoreMultiplier();
+        }
+
+        player.update(dt);
+        player.updateSpeed(dt, score);
+        player.updateBonusTimer(dt);
+
+        sf::Vector2f vel(0.f, player.getVelocityY());
+
+        constexpr float playerFootY = 1210.f;
+        bool grounded = player.getPosition().y >= playerFootY;
+
+        if (grounded && player.getVelocityY() >= 0.f) {
+            vel.y = 0.f;
+            player.setOnGround(true);
+        }
+        else {
+            player.setOnGround(false);
+        }
+
+        player.move(vel * dt);
+
+        if (player.getPosition().y > window.getSize().y + 200.f) {
+            gameOver = true;
+            std::cout << " Player fell off the map!" << std::endl;
+        }
+
+        // Nettoyage shurikens
+        for (auto& s : shurikens)
+            s->update(dt);
+
+        shurikens.erase(
+            std::remove_if(shurikens.begin(), shurikens.end(),
+                [](const std::unique_ptr<Shuriken>& s) { return s->isOffScreen(); }),
+            shurikens.end());
+
+        int hit = map->tryConsumePickup(player.getBounds());
+        if (hit > 0) score += 100.f;
+        else if (hit < 0) score = std::max(0.f, score - 50.f);
+
+        playerSpeed = std::max(1.f, mapSpeed / 200.f);
+    }
+
+                igUI.setBlockCooldown(player.getBlockCooldown(), player.getBlockCooldownDuration());
+                igUI.update(dt, score);
+                break;
     }
 }
 
@@ -288,39 +296,37 @@ void Game::render() {
     window.clear();
 
     switch (currentState) {
+    case MAINMENU:
+        mainMenu.draw(window);
+        break;
 
-        case MAINMENU:
-            mainMenu.draw(window);
-            break;
+    case OPTIONSMENU:
+        optionMenu.draw(window);
+        break;
 
-        case OPTIONSMENU:
-            optionMenu.draw(window);
-            break;
+    case PAUSEMENU:
+        pauseMenu.draw(window);
+        break;
 
-        case PAUSEMENU:
-            pauseMenu.draw(window);
-            break;
+    case PLAYING: {
+        if (map) map->draw(window);
+        player.draw(window);
 
-        case PLAYING: {
-            if (map) map->draw(window);
-            player.draw(window);
+        for (auto& s : shurikens)
+            s->draw(window);
 
-            for (auto& s : shurikens)
-                s->draw(window);
+        for (const auto& bonus : activeBonuses)
+            bonus->draw(window);
 
-            for (const auto& bonus : activeBonuses)
-                bonus->draw(window);
+        if (!gameStarted && countdown > 0.f)
+            window.draw(countdownText);
 
-            if (!gameStarted && countdown > 0.f)
-                window.draw(countdownText);
+        if (gameOver)
+            window.draw(gameOverText);
 
-            if (gameOver)
-                window.draw(gameOverText);
-
-            igUI.draw(window);
-
-            break;
-        }
+        igUI.draw(window);
+        break;
+    }
     }
 
     window.display();
