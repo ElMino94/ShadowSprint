@@ -50,7 +50,6 @@ void Map::reset() {
     cameraX = 0.f;
     baseSpeed = 220.f;
     speed = baseSpeed;
-    totalMeters = 0.f;
     lastSpeedStepMeters = 0.f;
     rng = Utils::RNG{};
 
@@ -88,15 +87,13 @@ void Map::reset() {
     }
 }
 
-float Map::update(float dt) {
+float Map::update(float dt, float score) {
     cameraX += speed * dt;
-    totalMeters += speed * metersPerPixel * dt;
 
-    // Augmente la vitesse au fil du temps
-    if (totalMeters - lastSpeedStepMeters > 50.f) {
-        lastSpeedStepMeters = totalMeters;
-        speed += 10.f;
-    }
+    float adjustedScore = score / 2160.f;
+    float curve = std::pow(adjustedScore, 2.f);
+    curve = std::clamp(curve, 0.f, 1.f);
+    speed = baseSpeed + curve * (10000.f - baseSpeed);
 
     const Vector2f screenSize(static_cast<float>(screen.x), static_cast<float>(screen.y));
     for (auto& layer : layers)

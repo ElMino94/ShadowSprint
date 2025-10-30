@@ -20,7 +20,7 @@ class Map {
 public:
     explicit Map(const sf::Vector2u& screenSize);
     void reset();
-    float update(float dt);
+    float update(float dt, float score);
     void draw(sf::RenderWindow& window);
 
     // (Pickups éventuels)
@@ -42,7 +42,6 @@ private:
     float cameraX = 0.f;
     float baseSpeed = 0.f;
     float speed = 0.f;
-    float totalMeters = 0.f;
     float lastSpeedStepMeters = 0.f;
     Utils::RNG rng;
     const float metersPerPixel = 0.1f;

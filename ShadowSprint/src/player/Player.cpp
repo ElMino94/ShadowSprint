@@ -42,6 +42,9 @@ Player::Player(float scale) : onGround(true), canDoubleJump(false), blocking(fal
 
 void Player::handleInput()
 {
+    if (currentState == State::Blocking && !blockAnim.isFinished())
+        return;
+
     blocking = false;
 
     if (Keyboard::isKeyPressed(Keyboard::Scancode::Space)) {
@@ -73,8 +76,11 @@ void Player::jump()
 void Player::update(float dt) {
     velocityY += gravity * dt;
 
-    if (blockCooldown > 0.f)
+    if (blockCooldown > 0.f) {
         blockCooldown -= dt;
+        if (blockCooldown < 0.f)
+            blockCooldown = 0.f;
+    }
 
     if (velocityY > 0.f && !onGround && currentState == State::Jumping) {
         setState(State::Falling);
@@ -98,7 +104,8 @@ void Player::update(float dt) {
 }
                      
 void Player::updateSpeed(float dt, float score) {
-    float speedFactor = std::max(0.01f, 0.15f - score * 0.0003f);
+    float adjustedScore = score * 0.25f;
+    float speedFactor = std::max(0.015f, 0.15f - adjustedScore * 0.0003f);
 
     idleAnim.setFrameTime(speedFactor);
     runAnim.setFrameTime(speedFactor);
@@ -122,6 +129,9 @@ int Player::getFrameCountForState(State state) const {
 }
 
 void Player::setState(State newState) {
+    if (currentState == State::Blocking && !blockAnim.isFinished())
+        return;
+
     if (currentState != newState) {
         Vector2f oldPos = sprite->getPosition();
         float oldBottom = oldPos.y + sprite->getGlobalBounds().size.y;

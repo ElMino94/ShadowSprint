@@ -143,7 +143,7 @@ void Game::update(float dt) {
             break;
 
         case PLAYING: {
-            float mapSpeed = map ? map->update(dt) : 0.f;
+            float mapSpeed = map ? map->update(dt, score) : 0.f;
 
             if (bonusSpawnClock.getElapsedTime().asSeconds() > bonusSpawnInterval) {
                 bonusSpawnClock.restart();
@@ -228,7 +228,7 @@ void Game::update(float dt) {
 
             if (!gameOver && gameStarted) {
                 player.handleInput();
-                score += 2.f * playerSpeed * dt * player.getScoreMultiplier();
+                score += 10.f * dt * player.getScoreMultiplier();
             }
 
             player.update(dt);
@@ -307,13 +307,6 @@ void Game::render() {
 
             for (auto& s : shurikens)
                 s->draw(window);
-
-            sf::FloatRect pb = player.getBounds();
-            sf::RectangleShape playerBox;
-            playerBox.setSize(pb.size);
-            playerBox.setPosition(pb.position);
-            playerBox.setFillColor(sf::Color(255, 0, 0, 80));
-            window.draw(playerBox);
 
             for (auto& s : shurikens) {
                 FloatRect sb = s->getBounds();
