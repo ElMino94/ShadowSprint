@@ -308,14 +308,6 @@ void Game::render() {
             for (auto& s : shurikens)
                 s->draw(window);
 
-            for (auto& s : shurikens) {
-                FloatRect sb = s->getBounds();
-                RectangleShape shBox(Vector2f(sb.size));
-                shBox.setPosition(sb.position);
-                shBox.setFillColor(Color(0, 255, 0, 80));
-                window.draw(shBox);
-            }
-
             for (const auto& bonus : activeBonuses)
                 bonus->draw(window);
 

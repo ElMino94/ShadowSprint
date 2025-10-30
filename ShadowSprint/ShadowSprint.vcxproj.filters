@@ -16,7 +16,6 @@
     <ClCompile Include="src\ui\MainMenu.cpp" />
     <ClCompile Include="src\ui\OptionMenu.cpp" />
     <ClCompile Include="src\ui\PauseMenu.cpp" />
-    <ClCompile Include="src\map\Platform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bonus\Bonus.h" />
@@ -34,6 +33,5 @@
     <ClInclude Include="include\ui\OptionMenu.h" />
     <ClInclude Include="include\ui\PauseMenu.h" />
     <ClInclude Include="include\ui\Utils.h" />
-    <ClInclude Include="include\map\Platform.h" />
   </ItemGroup>
 </Project>

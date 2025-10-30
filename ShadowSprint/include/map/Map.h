@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include "../../include/ui/Utils.h"
-#include "../../include/map/Platform.h"
 
 class ParallaxLayer {
 public:
@@ -28,7 +27,6 @@ public:
 
     float getGroundY() const;
 
-    const std::vector <std::unique_ptr<class Platform>>& getPlatforms() const;
 
 private:
     ParallaxLayer makeLayer(const std::string& file, float speedFactor, float y);
@@ -47,8 +45,6 @@ private:
 
     std::vector<ParallaxLayer> layers;
 
-    std::vector<std::unique_ptr<class Platform>> platforms;
-    float platformSpawnTimer = 0.f;
 
     Utils::RNG rng;
 };
