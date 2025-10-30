@@ -202,7 +202,7 @@ void Game::update(float dt) {
                 }
 
                 for (auto it = shurikens.begin(); it != shurikens.end();) {
-                    float shurikenSpeedFactor = player.isSlowMode() ? 0.5f : 1.f;
+                    float shurikenSpeedFactor = player.isSlowMode() ? 0.3f : 1.f;
                     (*it)->update(dt * shurikenSpeedFactor);
 
                     FloatRect playerBounds = player.getBounds();
@@ -214,7 +214,7 @@ void Game::update(float dt) {
                             continue;
                         }
                         else {
-                            //gameOver = true;
+                            gameOver = true;
                             break;
                         }
                     }
