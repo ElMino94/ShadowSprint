@@ -4,6 +4,8 @@
 
 ---
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/2684b043-0cc2-4da0-ba56-3549d69338de" />
+
 ## 🎮 Gameplay
 
 - **Déplacement automatique** : le joueur avance constamment, la vitesse de la map augmente progressivement avec le score.
